@@ -1229,15 +1229,16 @@ namespace POS
             switch (Convert.ToInt32(lblTitle.AccessibleName))
             {
                 case 0:
+                    //Back to Dashboard
                     Router.Dashboard();
                     System.Threading.Thread.Sleep(50);
                     this.Hide();
                     break;
 
                 case 1:
-                    //Back To Order menu 
+                    //Back to Order menu 
                     Tab.SelectTab("OrderType");
-                    lblTitle.Text = "Dashboard";
+                    lblTitle.Text = "Back to Dashboard";
                     lblTitle.AccessibleName = "0";
                     Index();
                     break;
@@ -1247,8 +1248,15 @@ namespace POS
                     Tab.SelectTab("Cart");
                     lblTitle.Hide();
                     btnBack.Hide();
-
                     break;
+
+                case 3:
+                    //Back to Customer Selection
+                    Tab.SelectTab("Customer");
+                    lblTitle.Text = "Back to Cart";
+                    lblTitle.AccessibleName = "2";
+                    break;
+
 
                 default:
                     MessageBox.Show("All I know is ... that this is supposed to go back somewhere :p");
@@ -1267,10 +1275,10 @@ namespace POS
 
                 btnBack.Show();
                 lblTitle.AccessibleName = "2";
-                lblTitle.Text = "Cart";
+                lblTitle.Text = "Back to Cart";
                 lblTitle.Show();
 
-                label54.Text = Functions.Monify(CartSystem.totalPrice.ToString());
+                label54.Text = Settings.Setting["currency"] + Functions.Monify(CartSystem.totalPrice.ToString());
                 label55.Text = CartSystem.ItemCount().ToString();
             }
 
@@ -1295,14 +1303,21 @@ namespace POS
 
         private void btnProceedToPayment_Click(object sender, EventArgs e)
         {
-            if(tempOrder.CustomerID == 0)
+            bool valid = true;
+
+            // Just validation in case the user forgot to put in a customer :3 (not on purpose)
+            if (tempOrder.CustomerID == 0)
             {
-                if (MessageBox.Show("This order has no customer, are you sure you wish to continue?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    // doesn't seem like they want a customer on this order, time to get the payment thing ready.
+                if (MessageBox.Show("This order has no customer, are you sure you wish to continue?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                    valid = false;
+            }
 
-
-                }
+            if (valid)
+            {
+                // customer approved (either empty or a customer)
+                Tab.SelectTab("Payment");
+                lblTitle.Text = "Back to Customer";
+                lblTitle.AccessibleName = "3";
             }
         }
     }
