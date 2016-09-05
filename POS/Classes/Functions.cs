@@ -177,10 +177,6 @@ namespace POS.Classes
             }
             return user;
         }
-        public static void Hi()
-        {
-
-        }
 
         //String Modifiers
         public static string VerifyEmpty(string str)
@@ -192,19 +188,22 @@ namespace POS.Classes
         }
         public static List<SubItem> ToList(string str)
         {
-            List<SubItem> sIs = new List<SubItem>();
-            //mod@Modifier1@1.99^mod@Modifier2@2.99^mod@Modifier3@3.99^dis@Some Discount@1.00
-
-            string[] sub_item_info = str.Split('^');
-            foreach(string info in sub_item_info)
+            List<SubItem> sIs = null;
+            if (str != "")
             {
-                string type = info.Substring(0, 3);
+                //mod@Modifier1@1.99^mod@Modifier2@2.99^mod@Modifier3@3.99^dis@Some Discount@1.00
+                sIs = new List<SubItem>(); 
+                string[] sub_item_info = str.Split('^');
+                foreach (string info in sub_item_info)
+                {
+                    string type = info.Substring(0, 3);
 
-                SubItem sI = new SubItem();
-                sI.DiscountOrModifier = type == "dis" ? true : false;
-                sI.StringText = info.Substring(type.Length + 1, (info.IndexOf('@', info.IndexOf('@') + 1) - 4));
-                sI.Price = Math.Round(Convert.ToDecimal(info.Substring(type.Length + sI.StringText.Length + 2, info.Length - (type.Length + sI.StringText.Length + 2))), 2, MidpointRounding.AwayFromZero);
-                sIs.Add(sI);
+                    SubItem sI = new SubItem();
+                    sI.DiscountOrModifier = type == "dis" ? true : false;
+                    sI.Description = info.Substring(type.Length + 1, (info.IndexOf('@', info.IndexOf('@') + 1) - 4));
+                    sI.Price = Math.Round(Convert.ToDecimal(info.Substring(type.Length + sI.Description.Length + 2, info.Length - (type.Length + sI.Description.Length + 2))), 2, MidpointRounding.AwayFromZero);
+                    sIs.Add(sI);
+                }
             }
             return sIs;
         }

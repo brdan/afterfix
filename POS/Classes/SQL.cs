@@ -275,12 +275,12 @@ namespace POS.Classes
                     while (dr.Read())
                     {
                         OrderItem oI = new OrderItem();
-                        oI.ID = Convert.ToInt32(dr["id"]);
+                        oI.ID= Convert.ToInt32(dr["id"]);
                         oI.OrderID = Convert.ToInt32(dr["order_id"]);
                         oI.Qty = Convert.ToInt16(dr["qty"]);
                         oI.Description = dr["description"].ToString();
-                        oI.SubItems = Functions.ToList(dr["sub_items"].ToString());
                         oI.ItemPrice = Convert.ToDecimal(dr["price"]);
+                        oI.SubItems = Functions.ToList(dr["sub_items"].ToString());
                         Collections.OrderItems.Add(oI);
                     }
                 }
@@ -458,6 +458,75 @@ namespace POS.Classes
                 System.Windows.Forms.MessageBox.Show("Product created successfully!", "Product created", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
             }
             p = null;
+            cnx.Close();
+            return toReturn;
+        }
+        public static Order CreateOrder(Order o, Cart c)
+        {
+            SqlConnection cnx = new SqlConnection(cnxString); cnx.Open();
+            Order toReturn;
+
+            #region Inserting the Order
+            using (SqlCommand cmd = new SqlCommand("INSERT INTO orders(customer_id, order_type, number_of_guests, order_date, order_status, employee_id, table_id, total_price, total_paid, notes, discounts) VALUES(@customer_id, @order_type, @number_of_guests, @order_date, @order_status, @employee_id, @table_id, @total_price, @total_paid, @notes, @discounts) SELECT SCOPE_IDENTITY()", cnx))
+            {
+                System.Windows.Forms.MessageBox.Show(o.CustomerID + " " + o.OrderType + " " + o.NumberOfGuests + " " + o.OrderDate + " " + o.OrderStatus + " " + o.EmployeeID + " " + o.TableID + " " + o.TotalPrice + " " + o.TotalPaid + " " + o.Notes + " " + o.Discounts);
+
+                cmd.Parameters.Add(new SqlParameter("customer_id", o.CustomerID));
+                cmd.Parameters.Add(new SqlParameter("order_type", o.OrderType));
+                cmd.Parameters.Add(new SqlParameter("number_of_guests", o.NumberOfGuests));
+                cmd.Parameters.Add(new SqlParameter("order_date", o.OrderDate));
+                cmd.Parameters.Add(new SqlParameter("order_status", o.OrderStatus));
+                cmd.Parameters.Add(new SqlParameter("employee_id", o.EmployeeID));
+                cmd.Parameters.Add(new SqlParameter("table_id", o.TableID));
+                cmd.Parameters.Add(new SqlParameter("total_price", o.TotalPrice));
+                cmd.Parameters.Add(new SqlParameter("total_paid", o.TotalPaid));
+                cmd.Parameters.Add(new SqlParameter("notes", o.Notes));
+
+                if (o.Discounts != null)
+                    cmd.Parameters.Add(new SqlParameter("discounts", o.Discounts));
+                else
+                    cmd.Parameters.Add(new SqlParameter("discounts", DBNull.Value));
+
+                o.ID = (int)(decimal)cmd.ExecuteScalar();
+                c.OrderID = o.ID;
+                Collections.Orders.Add(o);
+                toReturn = o;
+                o = null;
+            }
+
+            #endregion
+
+            #region Inserting the Cart
+
+            foreach (OrderItem oI in c.Items)
+                using (SqlCommand cmd = new SqlCommand("INSERT INTO carts(order_id,qty,description,price,sub_items) VALUES(@order_id,@qty,@description,@sub_items) SELECT SCOPE_IDENTITY()", cnx))
+                {
+                    cmd.Parameters.Add(new SqlParameter("order_id", oI.OrderID));
+                    cmd.Parameters.Add(new SqlParameter("qty", oI.Qty));
+                    cmd.Parameters.Add(new SqlParameter("description", oI.Description));
+                    cmd.Parameters.Add(new SqlParameter("price", oI.ItemPrice));
+
+                    foreach (SubItem sI in oI.SubItems)
+                    {
+                        //mod@Modifier1@1.99^mod@Modifier2@2.99^mod@Modifier3@3.99^dis@Some Discount@1.
+                        string str = "";
+
+                        if (sI.DiscountOrModifier)
+                            str += "dis@"; else str += "mod@";
+                        str += sI.Price;
+
+                        if (!sI.Equals(c.Items.Last()))
+                            str += "^";
+                    }
+
+                    oI.ID = (int)(decimal)cmd.ExecuteScalar(); 
+                }
+
+            Collections.Carts.Add(c);
+            
+            #endregion
+
+            o = null;
             cnx.Close();
             return toReturn;
         }

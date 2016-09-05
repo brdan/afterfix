@@ -25,6 +25,20 @@ namespace POS.Classes
         public string Notes { get; set; }
         public Dictionary<string,string> Discounts { get; set; }
 
+        public Order(string type = "")
+        {
+            ID = 0;
+            CustomerID = 0;
+            OrderStatus = 1;
+            OrderDate = DateTime.Today;
+            TotalPaid = 0.00M;
+            TableID = 0;
+            NumberOfGuests = 0;
+            OrderType = type;
+            Notes = "";
+            Discounts = null;
+        }
+
         public Cart getCart()
         {
             Cart ca = new Cart();
@@ -47,20 +61,20 @@ namespace POS.Classes
         public int OrderID { get; set; }
         public int Qty { get; set; }
         public string Description { get; set; }
-        public List<SubItem> SubItems = new List<SubItem>();
         public decimal ItemPrice { get; set; }
-
+        public List<SubItem> SubItems = new List<SubItem>();
     }
 
     public class Cart
     {
-        public int OrderID { get; set; }
+        public int OrderID { get; set; } //this keeps it unique, PK
         public List<OrderItem> Items = new List<OrderItem>();
     }
+
     public class SubItem
     {
         public bool DiscountOrModifier { get; set; }
-        public string StringText { get; set; }
+        public string Description { get; set; }
         public decimal Price { get; set; }
     }
 }

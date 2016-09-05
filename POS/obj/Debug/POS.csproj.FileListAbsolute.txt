@@ -39,7 +39,6 @@ C:\Users\mohamed\Desktop\POS\POS\bin\Debug\POS.exe
 C:\Users\mohamed\Desktop\POS\POS\bin\Debug\POS.pdb
 C:\Users\mohamed\Desktop\POS\POS\bin\Debug\Newtonsoft.Json.dll
 C:\Users\mohamed\Desktop\POS\POS\bin\Debug\Newtonsoft.Json.xml
-C:\Users\mohamed\Desktop\POS\POS\obj\Debug\POS.csprojResolveAssemblyReference.cache
 C:\Users\mohamed\Desktop\POS\POS\obj\Debug\POS.frmLogin.resources
 C:\Users\mohamed\Desktop\POS\POS\obj\Debug\POS.frmSplash.resources
 C:\Users\mohamed\Desktop\POS\POS\obj\Debug\POS.frmCustomers.resources

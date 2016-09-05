@@ -309,6 +309,47 @@ namespace POS.Controls
 
             return counter;
         }
+        public Cart GetCart()
+        {
+            Cart c = new Cart();
+
+            foreach(Control cartItem in flp_cart.Controls)
+            {
+                if(cartItem.AccessibleDescription == "item")
+                {
+                    // So this is a main Item, create it
+                    OrderItem oI = new OrderItem(); // Creation will add ID
+
+                    oI.Qty = Convert.ToInt16(cartItem.Controls[0].Text);
+                    oI.Description = cartItem.Controls[1].Text;
+                    oI.ItemPrice = Convert.ToDecimal(cartItem.Controls[2].Text.Substring(1));
+
+                    #region Adding Sub-items to the OrderItem
+                    // Check if sub-items exist
+                    // But first check in the 'if' statement that there even IS any control that follows the previous one, to prevent index exception
+                    if (flp_cart.Controls.Count > (flp_cart.Controls.IndexOf(cartItem) + 1) && flp_cart.Controls[flp_cart.Controls.IndexOf(cartItem) + 1].Margin.Left == 20)
+                    {
+                        Control subBox = flp_cart.Controls[flp_cart.Controls.IndexOf(cartItem) + 1];
+
+                        for (int i = 0; i < subBox.Controls.Count / 3; i += 3)
+                        {
+                            SubItem sI = new SubItem();
+                            sI.DiscountOrModifier = subBox.Controls[i].Text == "t" ? true : false; // The icon
+                            sI.Description = subBox.Controls[i + 1].Text; // The Description
+                            sI.Price = Convert.ToDecimal(subBox.Controls[i + 2].Text.Substring(2)); // The Price, substring 2 because of currency and +/- symbols
+                            oI.SubItems.Add(sI);
+                        }
+                    }
+                    #endregion
+
+                    c.Items.Add(oI);
+                }
+            }
+
+            //When all the items and order items have been added, all that's left is the order ID attachment
+            return c;
+        }
+
 
         private void item_Click(object sender, EventArgs e)
         {

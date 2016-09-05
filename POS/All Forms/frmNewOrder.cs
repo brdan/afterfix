@@ -18,8 +18,10 @@ namespace POS
             InitializeComponent();
         }
 
-        Order tempOrder;
+        // GLOBAL VARIABLES
+        Order thisOrder;
         int itemViewMode = 0; //0 - Rectangles, 1 - List, 2 - Information Boxes
+
 
         // Public Functions
         public frmNewOrder Index()
@@ -52,21 +54,15 @@ namespace POS
             *  3 - Cancelled
             *  4 - Comlpleted
             */
-            tempOrder = new Order();
+            thisOrder = new Order(btn.AccessibleDescription);
+            thisOrder.EmployeeID = Collections.CurrentUser.ID;
 
             int routePath = Convert.ToInt16(btn.AccessibleName);
-
-            tempOrder.OrderStatus = 1;
-            tempOrder.OrderDate = DateTime.Today;
-            tempOrder.EmployeeID = Collections.CurrentUser.ID;
-            tempOrder.TotalPaid = 0.00M;
-            tempOrder.OrderType = btn.AccessibleDescription;
-
             switch (routePath)
             {
                 case 1:
                     //When the order type goes straight to the cart, like for Bar
-                    loadCart(tempOrder);
+                    loadCart(thisOrder);
                     lblTitle.Hide();
                     btnBack.Hide();
                     // btnBack.AccessibleName = "1";
@@ -88,7 +84,7 @@ namespace POS
             if (panel32.Controls.Find("customer_container", true) != null)
                 panel32.Controls.Remove(panel32.Controls["customer_container"]);
 
-            tempOrder.CustomerID = ID;
+            thisOrder.CustomerID = ID;
             Customer c = Collections.Customers.First(cust => cust.ID == ID);
             Panel pnl_customer = new Panel();
             pnl_customer.Size = new Size(185, 194);
@@ -1132,6 +1128,7 @@ namespace POS
             CartSystem.AddSubItem(true, "Student Discount", "1.00");
         }
 
+        // Even hanlders: Cart Options
         void CartSystem_ItemEdit(object sender, EventArgs e)
         {
             OrderTab.SelectTab("Edit");
@@ -1163,7 +1160,6 @@ namespace POS
 
             lblCartTitle.Text = "ADD MODIFIER";
         }
-
         void edit_Qty(object sender, EventArgs e)
         {
             int qty = ((Button)sender).Name.Contains("Down") ? Convert.ToInt16(lblEditQty.Text) - 1 : Convert.ToInt16(lblEditQty.Text) + 1;
@@ -1178,7 +1174,6 @@ namespace POS
         {
             CartSystem.EditItem(lblEditQty.Text, txtEditDescription.Text, txtEditPrice.Text);
         }
-
         void txtDiscountAmount_Click(object sender, EventArgs e)
         {
             lblDiscountIsPercent.Text = lblDiscountIsPercent.Text.Contains("%") ? "( " + Settings.Setting["currency"] + " )" : "( % )";
@@ -1188,8 +1183,6 @@ namespace POS
             lblModifierIsPercent.Text = lblModifierIsPercent.Text.Contains("%") ? "( " + Settings.Setting["currency"] + " )" : "( % )";
 
         }
-
-
         void btnDiscountApply_Click(object sender, EventArgs e)
         {
             string name = txtDiscountName.TextLength > 0 ? txtDiscountName.Text : "Unnamed Discount";
@@ -1206,7 +1199,6 @@ namespace POS
                 CartSystem.AddSubItem(true, name, price.ToString(), isPercent);
             }
         }
-
         void btnModifierApply_Click(object sender, EventArgs e)
         {
             string name = txtModifierName.TextLength > 0 ? txtModifierName.Text : "Unnamed Modifier";
@@ -1223,7 +1215,6 @@ namespace POS
                 CartSystem.AddSubItem(false, name, price.ToString(), isPercent);
             }
         }
-
         void btnBack_Click(object sender, EventArgs e)
         {
             switch (Convert.ToInt32(lblTitle.AccessibleName))
@@ -1263,14 +1254,32 @@ namespace POS
                     break;
             }
         }
-
         private void btnSaveQuit_Click(object sender, EventArgs e)
         {
-            //just make a huge window that says "Exit to Menu" and "Continue Order"
+            // Saving the order (remember that the cart and order are stored independently of one another)
+            thisOrder.TotalPrice = CartSystem.totalPrice;
+
+            if (thisOrder.ID == 0)
+            {
+                SQL.CreateOrder(thisOrder, CartSystem.GetCart());
+            } else
+            {
+                MessageBox.Show("This order exists, gonna save it now");
+            }
+            // Create the order skeleton (I call it this because it only contains minimal information right now)
+
+
+            
+            
+
+
+
+
+            // Just make a huge window that says "Exit to Menu" and "Continue Order"
 
             if (MessageBox.Show("This order has been saved. Would you like to continue?", "Continue?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                //Change tab and show back button, also number of items and total price
+                // Change tab and show back button, also number of items and total price
                 Tab.SelectTab("Customer");
 
                 btnBack.Show();
@@ -1283,30 +1292,27 @@ namespace POS
             }
 
         }
-
         private void btnAddCustomer_Click(object sender, EventArgs e)
         {
             Router.frmCustFromOrder = true;
             Router.Customers();
             
         }
-
-        private void removeCustomer(object sender, EventArgs e)
+        private void btnRemoveCustomer_Click(object sender, EventArgs e)
         {
             //Removing customer
-            tempOrder.CustomerID = 0;
+            thisOrder.CustomerID = 0;
             panel32.Controls.Remove(panel32.Controls["customer_container"]);
 
             button132.Hide();
             label47.Show();
         }
-
         private void btnProceedToPayment_Click(object sender, EventArgs e)
         {
             bool valid = true;
 
             // Just validation in case the user forgot to put in a customer :3 (not on purpose)
-            if (tempOrder.CustomerID == 0)
+            if (thisOrder.CustomerID == 0)
             {
                 if (MessageBox.Show("This order has no customer, are you sure you wish to continue?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                     valid = false;
@@ -1318,7 +1324,18 @@ namespace POS
                 Tab.SelectTab("Payment");
                 lblTitle.Text = "Back to Customer";
                 lblTitle.AccessibleName = "3";
+
+                // update detai ls
+                label58.Text = Functions.Monify(thisOrder.TotalPaid.ToString());
+                label59.Text = Functions.Monify((thisOrder.TotalPrice - thisOrder.TotalPaid).ToString());
+                label60.Text = Functions.Monify(thisOrder.TotalPrice.ToString());
             }
+        }
+        private void payment_side_btns_Click(object sender, EventArgs e)
+        {
+            if(((Button)sender).Text == "EXACT AMOUNT")
+            { }
+
         }
     }
 }
