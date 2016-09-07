@@ -67,6 +67,7 @@ namespace POS.Controls
             flp.AccessibleName = p.ID.ToString();
             flp.AccessibleDescription = "item";
             flp.Tag = pattern.ToArgb().ToString();
+            flp.TabIndex = 0;
 
             //Item Qty Label
             Label lblQty = new Label();
@@ -224,6 +225,12 @@ namespace POS.Controls
                 #region Designs the three labels based on parameters, then adds it to the Sub-Box
                 Control parent = flp_cart.Controls[selectedItemIndex + 1];
                 //the three labels
+                FlowLayoutPanel wrapper = new FlowLayoutPanel();
+                wrapper.AutoSize = true;
+                wrapper.Margin = new Padding(0, 0, 0, 0);
+                wrapper.Name = "wrapper";
+                parent.Controls.Add(wrapper);
+
                 Label lblIcon = new Label();
                 lblIcon.BackColor = Color.FromArgb(14, 32, 50);
                 lblIcon.ForeColor = Color.Gainsboro;
@@ -276,9 +283,9 @@ namespace POS.Controls
 
 
                 //add controls
-                parent.Controls.Add(lblIcon);
-                parent.Controls.Add(lblName);
-                parent.Controls.Add(lblPrice);
+                wrapper.Controls.Add(lblIcon);
+                wrapper.Controls.Add(lblName);
+                wrapper.Controls.Add(lblPrice);
                 #endregion
 
                 #region Finally, updating price visual and changing the colour to indicate price influence
@@ -300,6 +307,11 @@ namespace POS.Controls
                     break;
             }
         }
+        public void IdentifyItems(System.Collections.Generic.List<OrderItem> items)
+        {
+            for(int i = 0; i < items.Count; i++)
+                flp_cart.Controls[i].TabIndex = items[i].ID;
+        }
         public int ItemCount()
         {
             int counter = 0;
@@ -319,7 +331,7 @@ namespace POS.Controls
                 {
                     // So this is a main Item, create it
                     OrderItem oI = new OrderItem(); // Creation will add ID
-
+                    oI.ID = Convert.ToInt32(cartItem.Tag);
                     oI.Qty = Convert.ToInt16(cartItem.Controls[0].Text);
                     oI.Description = cartItem.Controls[1].Text;
                     oI.ItemPrice = Convert.ToDecimal(cartItem.Controls[2].Text.Substring(1));
@@ -329,15 +341,15 @@ namespace POS.Controls
                     // But first check in the 'if' statement that there even IS any control that follows the previous one, to prevent index exception
                     if (flp_cart.Controls.Count > (flp_cart.Controls.IndexOf(cartItem) + 1) && flp_cart.Controls[flp_cart.Controls.IndexOf(cartItem) + 1].Margin.Left == 20)
                     {
-                        Control subBox = flp_cart.Controls[flp_cart.Controls.IndexOf(cartItem) + 1];
+                        Control subBoxContainer = flp_cart.Controls[flp_cart.Controls.IndexOf(cartItem) + 1]; // sub-items main container
 
-                        for (int i = 0; i < subBox.Controls.Count / 3; i += 3)
+                        foreach(Control subBox in subBoxContainer.Controls)
                         {
                             SubItem sI = new SubItem();
-                            sI.DiscountOrModifier = subBox.Controls[i].Text == "t" ? true : false; // The icon
-                            sI.Description = subBox.Controls[i + 1].Text; // The Description
-                            sI.Price = Convert.ToDecimal(subBox.Controls[i + 2].Text.Substring(2)); // The Price, substring 2 because of currency and +/- symbols
-                            oI.SubItems.Add(sI);   
+                            sI.DiscountOrModifier = subBox.Controls[0].Text == "t" ? true : false; // the icon
+                            sI.Description= subBox.Controls[1].Text; // the description
+                            sI.Price= Convert.ToDecimal(subBox.Controls[2].Text.Substring(2)); // the price, substring 2 because of currency and +/- symbols
+                            oI.SubItems.Add(sI);
                         }
                     }
                     #endregion
@@ -381,7 +393,7 @@ namespace POS.Controls
                     tmrOptions.Start();
                 }
             }
-
+            MessageBox.Show("The ID: " + lbl.Parent.TabIndex);
         }
         private void subItem_Click(object sender, EventArgs e)
         {

@@ -330,7 +330,24 @@ namespace POS.Classes
                 System.Windows.Forms.MessageBox.Show(String.Format("ID:{0}\r\nName:{1}", c.ID, c.FirstName));
         } //a dev-func :p you'll prolly wanna delete this after
 
-        //Create Functions
+        // Utils
+        public static int NumRows(string query)
+        {
+            int rows = 0;
+            using (SqlConnection cnx = new SqlConnection(cnxString))
+            {
+                cnx.Open();
+
+                using (SqlDataReader dr = new SqlCommand(query, cnx).ExecuteReader())
+                    while (dr.Read())
+                        rows++;
+                cnx.Close();
+            }
+
+            return rows;
+        }
+
+        // Create Functions
         public static Customer CreateCustomer(Customer c)
         {
             SqlConnection cnx = new SqlConnection(cnxString); cnx.Open();
@@ -463,79 +480,74 @@ namespace POS.Classes
         }
         public static Order CreateOrder(Order o, Cart c)
         {
-            SqlConnection cnx = new SqlConnection(cnxString); cnx.Open();
-            Order toReturn;
-
-            #region Inserting the Order
-            using (SqlCommand cmd = new SqlCommand("INSERT INTO orders(customer_id, order_type, number_of_guests, order_date, order_status, employee_id, table_id, total_price, total_paid, notes, discounts) VALUES(@customer_id, @order_type, @number_of_guests, @order_date, @order_status, @employee_id, @table_id, @total_price, @total_paid, @notes, @discounts) SELECT SCOPE_IDENTITY()", cnx))
+            using (SqlConnection cnx = new SqlConnection(cnxString))
             {
-                cmd.Parameters.Add(new SqlParameter("customer_id", o.CustomerID));
-                cmd.Parameters.Add(new SqlParameter("order_type", o.OrderType));
-                cmd.Parameters.Add(new SqlParameter("number_of_guests", o.NumberOfGuests));
-                cmd.Parameters.Add(new SqlParameter("order_date", o.OrderDate));
-                cmd.Parameters.Add(new SqlParameter("order_status", o.OrderStatus));
-                cmd.Parameters.Add(new SqlParameter("employee_id", o.EmployeeID));
-                cmd.Parameters.Add(new SqlParameter("table_id", o.TableID));
-                cmd.Parameters.Add(new SqlParameter("total_price", o.TotalPrice));
-                cmd.Parameters.Add(new SqlParameter("total_paid", o.TotalPaid));
-                cmd.Parameters.Add(new SqlParameter("notes", o.Notes));
+                cnx.Open();
 
-                if (o.Discounts != null)
-                    cmd.Parameters.Add(new SqlParameter("discounts", o.Discounts));
-                else
-                    cmd.Parameters.Add(new SqlParameter("discounts", DBNull.Value));
-
-                o.ID = (int)(decimal)cmd.ExecuteScalar();
-                c.OrderID = o.ID;
-                Collections.Orders.Add(o);
-                toReturn = o;
-                o = null;
-            }
-
-            #endregion
-
-            #region Inserting the Cart
-
-            foreach (OrderItem oI in c.Items)
-                using (SqlCommand cmd = new SqlCommand("INSERT INTO carts(order_id,qty,description,price,sub_items) VALUES(@order_id,@qty,@description,@price,@sub_items) SELECT SCOPE_IDENTITY()", cnx))
+                #region Inserting the Order
+                using (SqlCommand cmd = new SqlCommand("INSERT INTO orders(customer_id, order_type, number_of_guests, order_date, order_status, employee_id, table_id, total_price, total_paid, notes, discounts) VALUES(@customer_id, @order_type, @number_of_guests, @order_date, @order_status, @employee_id, @table_id, @total_price, @total_paid, @notes, @discounts) SELECT SCOPE_IDENTITY()", cnx))
                 {
-                    cmd.Parameters.Add(new SqlParameter("order_id", toReturn.ID));
-                    cmd.Parameters.Add(new SqlParameter("qty", oI.Qty));
-                    cmd.Parameters.Add(new SqlParameter("description", oI.Description));
-                    cmd.Parameters.Add(new SqlParameter("price", oI.ItemPrice));
+                    cmd.Parameters.Add(new SqlParameter("customer_id", o.CustomerID));
+                    cmd.Parameters.Add(new SqlParameter("order_type", o.OrderType));
+                    cmd.Parameters.Add(new SqlParameter("number_of_guests", o.NumberOfGuests));
+                    cmd.Parameters.Add(new SqlParameter("order_date", o.OrderDate));
+                    cmd.Parameters.Add(new SqlParameter("order_status", o.OrderStatus));
+                    cmd.Parameters.Add(new SqlParameter("employee_id", o.EmployeeID));
+                    cmd.Parameters.Add(new SqlParameter("table_id", o.TableID));
+                    cmd.Parameters.Add(new SqlParameter("total_price", Functions.Monify(o.TotalPrice.ToString())));
+                    cmd.Parameters.Add(new SqlParameter("total_paid", Functions.Monify(o.TotalPaid.ToString())));
+                    cmd.Parameters.Add(new SqlParameter("notes", o.Notes));
 
-                    string str = "";
-                    foreach (SubItem sI in oI.SubItems)
-                    {
-                        //mod@Modifier1@1.99^mod@Modifier2@2.99^mod@Modifier3@3.99^dis@Some Discount@1.
+                    if (o.Discounts != null)
+                        cmd.Parameters.Add(new SqlParameter("discounts", o.Discounts));
+                    else
+                        cmd.Parameters.Add(new SqlParameter("discounts", DBNull.Value));
 
-
-                        if (sI.DiscountOrModifier)
-                            str += "dis@";
-                        else str += "mod@";
-                        str += sI.Description + "@";
-                        str += sI.Price;
-
-
-                        if (!sI.Equals(oI.SubItems.Last()))
-                            str += "^";
-
-                    }
-                    cmd.Parameters.Add(new SqlParameter("sub_items", str));
-
-                    oI.ID = (int)(decimal)cmd.ExecuteScalar(); 
+                    o.ID = (int)(decimal)cmd.ExecuteScalar();
+                    Collections.Orders.Add(o);
                 }
 
-            Collections.Carts.Add(c);
-            
-            #endregion
+                #endregion
 
-            o = null;
-            cnx.Close();
-            return toReturn;
+                #region Inserting the Cart
+
+                foreach (OrderItem oI in c.Items.ToList())
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO carts(order_id,qty,description,price,sub_items) VALUES(@order_id,@qty,@description,@price,@sub_items) SELECT SCOPE_IDENTITY()", cnx))
+                    {
+                        cmd.Parameters.Add(new SqlParameter("order_id", o.ID));
+                        cmd.Parameters.Add(new SqlParameter("qty", oI.Qty));
+                        cmd.Parameters.Add(new SqlParameter("description", oI.Description));
+                        cmd.Parameters.Add(new SqlParameter("price", Functions.Monify(oI.ItemPrice.ToString())));
+
+                        string str = "";
+                        foreach (SubItem sI in oI.SubItems)
+                        {
+                            //mod@Modifier1@1.99^mod@Modifier2@2.99^mod@Modifier3@3.99^dis@Some Discount@1.
+                            if (sI.DiscountOrModifier)
+                                str += "dis@";
+                            else str += "mod@";
+                            str += sI.Description + "@";
+                            str += sI.Price;
+
+                            if (!sI.Equals(oI.SubItems.Last()))
+                                str += "^";
+                        }
+                        cmd.Parameters.Add(new SqlParameter("sub_items", str));
+                        oI.ID = (int)(decimal)cmd.ExecuteScalar();
+                        c.OrderID = o.ID;
+                        Collections.Carts.Add(c);
+                    }
+
+
+                #endregion
+
+
+                cnx.Close();
+            }
+            return o;
         }
 
-        //Save Functions
+        // Save Functions
         public static void SaveCustomer(Customer c)
         {
             SqlConnection cnx = new SqlConnection(cnxString); cnx.Open();
@@ -702,9 +714,86 @@ namespace POS.Classes
             }
             cnx.Close();
         }
+        public static void SaveOrder(Order o)
+        {
+            using (SqlConnection cnx = new SqlConnection(cnxString))
+            {
+                cnx.Open();
+
+                #region Updating the Order
+                using (SqlCommand cmd = new SqlCommand("UPDATE orders SET customer_id=@customer_id, order_type=@order_type, number_of_guests=@number_of_guests, order_date=@order_date, order_status=@order_status, employee_id=@employee_id, table_id=@table_id, total_price=@total_price, total_paid=@total_paid, notes=@notes, discounts=@discounts WHERE id=" + o.ID, cnx))
+                {
+                    cmd.Parameters.Add(new SqlParameter("customer_id", o.CustomerID));
+                    cmd.Parameters.Add(new SqlParameter("order_type", o.OrderType));
+                    cmd.Parameters.Add(new SqlParameter("number_of_guests", o.NumberOfGuests));
+                    cmd.Parameters.Add(new SqlParameter("order_date", o.OrderDate));
+                    cmd.Parameters.Add(new SqlParameter("order_status", o.OrderStatus));
+                    cmd.Parameters.Add(new SqlParameter("employee_id", o.EmployeeID));
+                    cmd.Parameters.Add(new SqlParameter("table_id", o.TableID));
+                    cmd.Parameters.Add(new SqlParameter("total_price", Functions.Monify(o.TotalPrice.ToString())));
+                    cmd.Parameters.Add(new SqlParameter("total_paid", Functions.Monify(o.TotalPaid.ToString())));
+                    cmd.Parameters.Add(new SqlParameter("notes", o.Notes));
+
+                    if (o.Discounts != null)
+                        cmd.Parameters.Add(new SqlParameter("discounts", o.Discounts));
+                    else
+                        cmd.Parameters.Add(new SqlParameter("discounts", DBNull.Value));
+
+                    cmd.ExecuteNonQuery();
+                }
+
+                #endregion
+
+                #region Updating the Cart
+                string query = null;
+                foreach (OrderItem oI in o.getCart().Items.ToList())
+                {
+                    
+                    if (oI.ID == 0)
+                        query = "INSERT INTO carts(order_id, qty, description, price, sub_items) VALUES(@order_id, @qty, @description, @price, @sub_items) SELECT SCOPE_IDENTITY()";
+                    else
+                        query = "UPDATE carts SET qty=@qty,description=@description,price=@price,sub_items=@sub_items WHERE id=" + oI.ID + " AND order_id=" + o.ID;
 
 
-        //Delete Functions
+                    using (SqlCommand cmd = new SqlCommand(query, cnx))
+                    {
+                        if (oI.ID == 0)
+                            cmd.Parameters.Add(new SqlParameter("order_id", o.ID));
+
+                        cmd.Parameters.Add(new SqlParameter("qty", oI.Qty));
+                        cmd.Parameters.Add(new SqlParameter("description", oI.Description));
+                        cmd.Parameters.Add(new SqlParameter("price", Functions.Monify(oI.ItemPrice.ToString())));
+
+                        string str = "";
+                        foreach (SubItem sI in oI.SubItems)
+                        {
+                            //mod@Modifier1@1.99^mod@Modifier2@2.99^mod@Modifier3@3.99^dis@Some Discount@1.
+                            if (sI.DiscountOrModifier)
+                                str += "dis@";
+                            else str += "mod@";
+                            str += sI.Description + "@";
+                            str += sI.Price;
+
+                            if (!sI.Equals(oI.SubItems.Last()))
+                                str += "^";
+                        }
+                        cmd.Parameters.Add(new SqlParameter("sub_items", str));
+
+                        if (oI.ID == 0)
+                            oI.ID = (int)(decimal)cmd.ExecuteScalar();
+                        else
+                            cmd.ExecuteNonQuery();
+
+                    }
+                }
+
+                #endregion
+
+                cnx.Close();
+            }
+        }
+
+        // Delete Functions
         public static void DeleteCustomer(int ID)
         {
             SqlConnection cnx = new SqlConnection(cnxString); cnx.Open();

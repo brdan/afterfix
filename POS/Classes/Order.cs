@@ -42,14 +42,14 @@ namespace POS.Classes
         public Cart getCart()
         {
             Cart ca = new Cart();
-            try
-            {
+           /// try
+           // {
                 ca = Collections.Carts.First(c => c.OrderID == ID);
-            }
-            catch (Exception)
-            {
-                System.Windows.Forms.MessageBox.Show("Something is wrong with the cart for this order...");
-            }
+          //  }
+           // catch (Exception)
+           // {
+           //     System.Windows.Forms.MessageBox.Show("Something is wrong with the cart for this order..." );
+       //     }
 
             return ca;
         }

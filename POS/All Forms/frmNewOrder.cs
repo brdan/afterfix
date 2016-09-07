@@ -37,6 +37,11 @@ namespace POS
         {
             Tab.SelectTab("Cart");
             MsgGlobal.Tell("There's no back button here. If you want to return, save the order, or void it.");
+
+            if (o.ID == 0)
+                btnSaveQuit.Text = "CREATE AND SAVE";
+            else
+                btnSaveQuit.Text = "SAVE ORDER";
         }
         public void initOrder(Button btn)
         {
@@ -1261,22 +1266,29 @@ namespace POS
 
             if (thisOrder.ID == 0)
             {
-                SQL.CreateOrder(thisOrder, CartSystem.GetCart());
-            } else
-            {
-                MessageBox.Show("This order exists, gonna save it now");
+                CartSystem.IdentifyItems(SQL.CreateOrder(thisOrder, CartSystem.GetCart()).getCart().Items);
+
+
+                btnSaveQuit.Text = "SAVE ORDER";
             }
+            else
+            {
+                MessageBox.Show("savin.");
+                Cart c = thisOrder.getCart();
+                c.Items = CartSystem.GetCart().Items;
+
+                SQL.SaveOrder(thisOrder);
+
+                MessageBox.Show("You've now saved the order with a total of " + CartSystem.GetCart().Items.Count + " items, though the saved cart for this order has only " + thisOrder.getCart().Items.Count + " ... is that correct or not?");
+            }
+            
             // Create the order skeleton (I call it this because it only contains minimal information right now)
 
-
-            
-            
 
 
 
 
             // Just make a huge window that says "Exit to Menu" and "Continue Order"
-
             if (MessageBox.Show("This order has been saved. Would you like to continue?", "Continue?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 // Change tab and show back button, also number of items and total price
