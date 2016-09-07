@@ -337,7 +337,7 @@ namespace POS.Controls
                             sI.DiscountOrModifier = subBox.Controls[i].Text == "t" ? true : false; // The icon
                             sI.Description = subBox.Controls[i + 1].Text; // The Description
                             sI.Price = Convert.ToDecimal(subBox.Controls[i + 2].Text.Substring(2)); // The Price, substring 2 because of currency and +/- symbols
-                            oI.SubItems.Add(sI);
+                            oI.SubItems.Add(sI);   
                         }
                     }
                     #endregion

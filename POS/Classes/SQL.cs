@@ -11,7 +11,7 @@ namespace POS.Classes
 {
     public static class SQL
     {
-        /*as one of your MASTER refinations, think of using single-functions and utilising the oftype() + interface features to 
+        /*as one of your MASTER refining, think of using single-functions and utilising the oftype() + interface features to 
          figure out which type the code is dealing with, and what its fields are :P*/
         static string cnxString = @"Data Source=MOHAMED-PC\SQLEXPRESS;Initial Catalog=POS;Integrated Security=True";
         public static void Init()
@@ -469,8 +469,6 @@ namespace POS.Classes
             #region Inserting the Order
             using (SqlCommand cmd = new SqlCommand("INSERT INTO orders(customer_id, order_type, number_of_guests, order_date, order_status, employee_id, table_id, total_price, total_paid, notes, discounts) VALUES(@customer_id, @order_type, @number_of_guests, @order_date, @order_status, @employee_id, @table_id, @total_price, @total_paid, @notes, @discounts) SELECT SCOPE_IDENTITY()", cnx))
             {
-                System.Windows.Forms.MessageBox.Show(o.CustomerID + " " + o.OrderType + " " + o.NumberOfGuests + " " + o.OrderDate + " " + o.OrderStatus + " " + o.EmployeeID + " " + o.TableID + " " + o.TotalPrice + " " + o.TotalPaid + " " + o.Notes + " " + o.Discounts);
-
                 cmd.Parameters.Add(new SqlParameter("customer_id", o.CustomerID));
                 cmd.Parameters.Add(new SqlParameter("order_type", o.OrderType));
                 cmd.Parameters.Add(new SqlParameter("number_of_guests", o.NumberOfGuests));
@@ -499,25 +497,31 @@ namespace POS.Classes
             #region Inserting the Cart
 
             foreach (OrderItem oI in c.Items)
-                using (SqlCommand cmd = new SqlCommand("INSERT INTO carts(order_id,qty,description,price,sub_items) VALUES(@order_id,@qty,@description,@sub_items) SELECT SCOPE_IDENTITY()", cnx))
+                using (SqlCommand cmd = new SqlCommand("INSERT INTO carts(order_id,qty,description,price,sub_items) VALUES(@order_id,@qty,@description,@price,@sub_items) SELECT SCOPE_IDENTITY()", cnx))
                 {
-                    cmd.Parameters.Add(new SqlParameter("order_id", oI.OrderID));
+                    cmd.Parameters.Add(new SqlParameter("order_id", toReturn.ID));
                     cmd.Parameters.Add(new SqlParameter("qty", oI.Qty));
                     cmd.Parameters.Add(new SqlParameter("description", oI.Description));
                     cmd.Parameters.Add(new SqlParameter("price", oI.ItemPrice));
 
+                    string str = "";
                     foreach (SubItem sI in oI.SubItems)
                     {
                         //mod@Modifier1@1.99^mod@Modifier2@2.99^mod@Modifier3@3.99^dis@Some Discount@1.
-                        string str = "";
+
 
                         if (sI.DiscountOrModifier)
-                            str += "dis@"; else str += "mod@";
+                            str += "dis@";
+                        else str += "mod@";
+                        str += sI.Description + "@";
                         str += sI.Price;
 
-                        if (!sI.Equals(c.Items.Last()))
+
+                        if (!sI.Equals(oI.SubItems.Last()))
                             str += "^";
+
                     }
+                    cmd.Parameters.Add(new SqlParameter("sub_items", str));
 
                     oI.ID = (int)(decimal)cmd.ExecuteScalar(); 
                 }

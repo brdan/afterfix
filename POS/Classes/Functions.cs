@@ -191,7 +191,12 @@ namespace POS.Classes
             List<SubItem> sIs = null;
             if (str != "")
             {
-                //mod@Modifier1@1.99^mod@Modifier2@2.99^mod@Modifier3@3.99^dis@Some Discount@1.00
+                /*
+                 * mod@Modifier1@1.99^
+                 * mod@Modifier2@2.99^
+                 * mod@Modifier3@3.99^
+                 * dis@Some Discount@1.00
+                 */
                 sIs = new List<SubItem>(); 
                 string[] sub_item_info = str.Split('^');
                 foreach (string info in sub_item_info)
