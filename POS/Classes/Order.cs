@@ -22,6 +22,7 @@ namespace POS.Classes
         public int TableID { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal TotalPaid { get; set; }
+        public Dictionary<string,string> PaymentMethods { get; set; }
         public string Notes { get; set; }
         public Dictionary<string,string> Discounts { get; set; }
 
@@ -37,20 +38,22 @@ namespace POS.Classes
             OrderType = type;
             Notes = "";
             Discounts = null;
+            PaymentMethods = new Dictionary<string, string>();
         }
 
         public Cart getCart()
         {
             Cart ca = new Cart();
-           /// try
-           // {
+            try
+            {
                 ca = Collections.Carts.First(c => c.OrderID == ID);
-          //  }
-           // catch (Exception)
-           // {
-           //     System.Windows.Forms.MessageBox.Show("Something is wrong with the cart for this order..." );
-       //     }
-
+            }
+            catch (Exception)
+            {
+                System.Windows.Forms.MessageBox.Show("Something is wrong with the cart for this order...", "Something is wrong", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                ca.OrderID = ID;
+                Collections.Carts.Add(ca);
+            }
             return ca;
         }
     }

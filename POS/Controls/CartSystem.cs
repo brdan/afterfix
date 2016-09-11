@@ -331,7 +331,7 @@ namespace POS.Controls
                 {
                     // So this is a main Item, create it
                     OrderItem oI = new OrderItem(); // Creation will add ID
-                    oI.ID = Convert.ToInt32(cartItem.Tag);
+                    oI.ID = Convert.ToInt32(cartItem.TabIndex);
                     oI.Qty = Convert.ToInt16(cartItem.Controls[0].Text);
                     oI.Description = cartItem.Controls[1].Text;
                     oI.ItemPrice = Convert.ToDecimal(cartItem.Controls[2].Text.Substring(1));
@@ -393,7 +393,6 @@ namespace POS.Controls
                     tmrOptions.Start();
                 }
             }
-            MessageBox.Show("The ID: " + lbl.Parent.TabIndex);
         }
         private void subItem_Click(object sender, EventArgs e)
         {

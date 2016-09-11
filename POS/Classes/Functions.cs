@@ -150,7 +150,7 @@ namespace POS.Classes
         public static string Price(decimal p)
         {
 
-            return Math.Round(p, 2).ToString("00.00");
+            return Math.Round(p, 2).ToString("0.00");
         }
 
         //Verifiers 
@@ -186,11 +186,12 @@ namespace POS.Classes
             else
                 return str;
         }
-        public static List<SubItem> ToList(string str)
+        public static List<SubItem> SubItemsToList(string str)
         {
             List<SubItem> sIs = null;
+
             if (str != "")
-            {
+            { 
                 /*
                  * mod@Modifier1@1.99^
                  * mod@Modifier2@2.99^
@@ -212,6 +213,59 @@ namespace POS.Classes
             }
             return sIs;
         }
+        public static string ListToSubItems(List<SubItem> subItems)
+        {
+            string str = "";
+            foreach (SubItem sI in subItems)
+            {
+                if (sI.DiscountOrModifier)
+                    str += "dis@";
+                else str += "mod@";
+                str += sI.Description + "@";
+                str += sI.Price;
+
+                if (!sI.Equals(subItems.Last()))
+                    str += "^";
+            }
+            return str;
+        }
+        public static Dictionary<string, string> StringToDict(string str)
+        {
+
+            Dictionary<string, string> Payments = new Dictionary<string, string>();
+            if (str != "")
+            {
+                //Cash|2.99^Voucher|2.30
+                string[] payments = str.Split('^');
+
+                foreach(string payment in payments)
+                {
+                    string key = payment.Substring(0, payment.IndexOf('|'));
+                    string value = payment.Substring(key.Length + 1, payment.Length - (key.Length + 1));
+
+                    Payments.Add(key, value);
+                }
+            }
+
+            return Payments;
+        }
+        public static string DictToString(Dictionary<string,string> Dict)
+        {
+            string str = "";
+
+            if (Dict.Keys.Count > 0)
+                foreach (var pair in Dict)
+                {
+                    var key = pair.Key;
+                    var value = pair.Value;
+
+                    str += key + "|" + value;
+                }
+
+            return str;
+        }
+
+
         public static string Monify (string money)
         {
             return Convert.ToDecimal(money).ToString("0#.00");

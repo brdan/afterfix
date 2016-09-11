@@ -32,18 +32,6 @@
             this.flp_cart = new System.Windows.Forms.FlowLayoutPanel();
             this.tmrScroll = new System.Windows.Forms.Timer(this.components);
             this.tmrCool = new System.Windows.Forms.Timer(this.components);
-            this.su = new System.Windows.Forms.Label();
-            this.sd = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.lblSubTotal = new System.Windows.Forms.Label();
-            this.lblDiscount = new System.Windows.Forms.Label();
-            this.lblVAT = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.lblTotalPrice = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.pnlOptions = new System.Windows.Forms.Panel();
             this.label11 = new System.Windows.Forms.Label();
             this.btnModifier = new System.Windows.Forms.Button();
@@ -57,12 +45,26 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.lblTotalPrice2 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.lblSubTotal = new System.Windows.Forms.Label();
+            this.lblDiscount = new System.Windows.Forms.Label();
+            this.lblVAT = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.lblTotalPrice = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.label13 = new System.Windows.Forms.Label();
-            this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
+            this.lblTotalPrice2 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.su = new System.Windows.Forms.Label();
+            this.sd = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.flp_cart.SuspendLayout();
             this.pnlOptions.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -70,6 +72,7 @@
             // 
             this.flp_cart.AutoScroll = true;
             this.flp_cart.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(48)))), ((int)(((byte)(66)))));
+            this.flp_cart.Controls.Add(this.panel4);
             this.flp_cart.Location = new System.Drawing.Point(0, 34);
             this.flp_cart.Margin = new System.Windows.Forms.Padding(0);
             this.flp_cart.Name = "flp_cart";
@@ -85,152 +88,6 @@
             // 
             this.tmrCool.Interval = 10;
             this.tmrCool.Tick += new System.EventHandler(this.tmrCool_Tick);
-            // 
-            // su
-            // 
-            this.su.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(38)))), ((int)(((byte)(56)))));
-            this.su.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F);
-            this.su.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(48)))), ((int)(((byte)(66)))));
-            this.su.Location = new System.Drawing.Point(267, 397);
-            this.su.Margin = new System.Windows.Forms.Padding(0);
-            this.su.Name = "su";
-            this.su.Size = new System.Drawing.Size(35, 345);
-            this.su.TabIndex = 39;
-            this.su.Text = "▼";
-            this.su.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.su.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnScroll_MouseDown);
-            this.su.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnScroll_MouseUp);
-            // 
-            // sd
-            // 
-            this.sd.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(38)))), ((int)(((byte)(56)))));
-            this.sd.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F);
-            this.sd.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(48)))), ((int)(((byte)(66)))));
-            this.sd.Location = new System.Drawing.Point(267, 0);
-            this.sd.Margin = new System.Windows.Forms.Padding(0);
-            this.sd.Name = "sd";
-            this.sd.Size = new System.Drawing.Size(35, 397);
-            this.sd.TabIndex = 40;
-            this.sd.Text = "▲";
-            this.sd.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.sd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnScroll_MouseDown);
-            this.sd.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnScroll_MouseUp);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.label2.ForeColor = System.Drawing.Color.Gainsboro;
-            this.label2.Location = new System.Drawing.Point(13, 16);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(65, 13);
-            this.label2.TabIndex = 37;
-            this.label2.Text = "SUB-TOTAL";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.label3.ForeColor = System.Drawing.Color.Gainsboro;
-            this.label3.Location = new System.Drawing.Point(13, 64);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(62, 13);
-            this.label3.TabIndex = 38;
-            this.label3.Text = "DISCOUNT";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.label5.ForeColor = System.Drawing.Color.Gainsboro;
-            this.label5.Location = new System.Drawing.Point(13, 40);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(26, 13);
-            this.label5.TabIndex = 39;
-            this.label5.Text = "VAT";
-            // 
-            // lblSubTotal
-            // 
-            this.lblSubTotal.AutoSize = true;
-            this.lblSubTotal.Font = new System.Drawing.Font("Segoe UI Light", 10F);
-            this.lblSubTotal.ForeColor = System.Drawing.Color.Gainsboro;
-            this.lblSubTotal.Location = new System.Drawing.Point(89, 13);
-            this.lblSubTotal.Name = "lblSubTotal";
-            this.lblSubTotal.Size = new System.Drawing.Size(33, 19);
-            this.lblSubTotal.TabIndex = 40;
-            this.lblSubTotal.Text = "0.00";
-            // 
-            // lblDiscount
-            // 
-            this.lblDiscount.AutoSize = true;
-            this.lblDiscount.Font = new System.Drawing.Font("Segoe UI Light", 10F);
-            this.lblDiscount.ForeColor = System.Drawing.Color.Gainsboro;
-            this.lblDiscount.Location = new System.Drawing.Point(89, 61);
-            this.lblDiscount.Name = "lblDiscount";
-            this.lblDiscount.Size = new System.Drawing.Size(33, 19);
-            this.lblDiscount.TabIndex = 41;
-            this.lblDiscount.Text = "0.00";
-            // 
-            // lblVAT
-            // 
-            this.lblVAT.AutoSize = true;
-            this.lblVAT.Font = new System.Drawing.Font("Segoe UI Light", 10F);
-            this.lblVAT.ForeColor = System.Drawing.Color.Gainsboro;
-            this.lblVAT.Location = new System.Drawing.Point(89, 37);
-            this.lblVAT.Name = "lblVAT";
-            this.lblVAT.Size = new System.Drawing.Size(33, 19);
-            this.lblVAT.TabIndex = 42;
-            this.lblVAT.Text = "0.00";
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(43)))), ((int)(((byte)(61)))));
-            this.panel1.Controls.Add(this.panel2);
-            this.panel1.Controls.Add(this.lblVAT);
-            this.panel1.Controls.Add(this.lblDiscount);
-            this.panel1.Controls.Add(this.lblSubTotal);
-            this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.label3);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Location = new System.Drawing.Point(0, 623);
-            this.panel1.Margin = new System.Windows.Forms.Padding(0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(267, 119);
-            this.panel1.TabIndex = 34;
-            // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(38)))), ((int)(((byte)(56)))));
-            this.panel2.Controls.Add(this.lblTotalPrice);
-            this.panel2.Controls.Add(this.label4);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(138, 0);
-            this.panel2.Margin = new System.Windows.Forms.Padding(0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(129, 119);
-            this.panel2.TabIndex = 71;
-            // 
-            // lblTotalPrice
-            // 
-            this.lblTotalPrice.AutoSize = true;
-            this.lblTotalPrice.Font = new System.Drawing.Font("Segoe UI Light", 13F);
-            this.lblTotalPrice.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(188)))), ((int)(((byte)(156)))));
-            this.lblTotalPrice.Location = new System.Drawing.Point(7, 36);
-            this.lblTotalPrice.Name = "lblTotalPrice";
-            this.lblTotalPrice.Size = new System.Drawing.Size(43, 25);
-            this.lblTotalPrice.TabIndex = 38;
-            this.lblTotalPrice.Text = "0.00";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.label4.ForeColor = System.Drawing.Color.Gainsboro;
-            this.label4.Location = new System.Drawing.Point(9, 16);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 13);
-            this.label4.TabIndex = 37;
-            this.label4.Text = "TOTAL";
             // 
             // pnlOptions
             // 
@@ -394,17 +251,132 @@
             this.label10.Text = "PRICE";
             this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // panel3
+            // label2
             // 
-            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(38)))), ((int)(((byte)(56)))));
-            this.panel3.Controls.Add(this.lblTotalPrice2);
-            this.panel3.Controls.Add(this.label13);
-            this.panel3.Location = new System.Drawing.Point(138, 548);
-            this.panel3.Margin = new System.Windows.Forms.Padding(0);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(129, 76);
-            this.panel3.TabIndex = 73;
-            this.panel3.Visible = false;
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.label2.ForeColor = System.Drawing.Color.Gainsboro;
+            this.label2.Location = new System.Drawing.Point(13, 16);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(65, 13);
+            this.label2.TabIndex = 37;
+            this.label2.Text = "SUB-TOTAL";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.label3.ForeColor = System.Drawing.Color.Gainsboro;
+            this.label3.Location = new System.Drawing.Point(13, 64);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(62, 13);
+            this.label3.TabIndex = 38;
+            this.label3.Text = "DISCOUNT";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.label5.ForeColor = System.Drawing.Color.Gainsboro;
+            this.label5.Location = new System.Drawing.Point(13, 40);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(26, 13);
+            this.label5.TabIndex = 39;
+            this.label5.Text = "VAT";
+            // 
+            // lblSubTotal
+            // 
+            this.lblSubTotal.AutoSize = true;
+            this.lblSubTotal.Font = new System.Drawing.Font("Segoe UI Light", 10F);
+            this.lblSubTotal.ForeColor = System.Drawing.Color.Gainsboro;
+            this.lblSubTotal.Location = new System.Drawing.Point(89, 13);
+            this.lblSubTotal.Name = "lblSubTotal";
+            this.lblSubTotal.Size = new System.Drawing.Size(33, 19);
+            this.lblSubTotal.TabIndex = 40;
+            this.lblSubTotal.Text = "0.00";
+            // 
+            // lblDiscount
+            // 
+            this.lblDiscount.AutoSize = true;
+            this.lblDiscount.Font = new System.Drawing.Font("Segoe UI Light", 10F);
+            this.lblDiscount.ForeColor = System.Drawing.Color.Gainsboro;
+            this.lblDiscount.Location = new System.Drawing.Point(89, 61);
+            this.lblDiscount.Name = "lblDiscount";
+            this.lblDiscount.Size = new System.Drawing.Size(33, 19);
+            this.lblDiscount.TabIndex = 41;
+            this.lblDiscount.Text = "0.00";
+            // 
+            // lblVAT
+            // 
+            this.lblVAT.AutoSize = true;
+            this.lblVAT.Font = new System.Drawing.Font("Segoe UI Light", 10F);
+            this.lblVAT.ForeColor = System.Drawing.Color.Gainsboro;
+            this.lblVAT.Location = new System.Drawing.Point(89, 37);
+            this.lblVAT.Name = "lblVAT";
+            this.lblVAT.Size = new System.Drawing.Size(33, 19);
+            this.lblVAT.TabIndex = 42;
+            this.lblVAT.Text = "0.00";
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(38)))), ((int)(((byte)(56)))));
+            this.panel2.Controls.Add(this.lblTotalPrice);
+            this.panel2.Controls.Add(this.label4);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel2.Location = new System.Drawing.Point(138, 0);
+            this.panel2.Margin = new System.Windows.Forms.Padding(0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(129, 119);
+            this.panel2.TabIndex = 71;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.label4.ForeColor = System.Drawing.Color.Gainsboro;
+            this.label4.Location = new System.Drawing.Point(9, 16);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(40, 13);
+            this.label4.TabIndex = 37;
+            this.label4.Text = "TOTAL";
+            // 
+            // lblTotalPrice
+            // 
+            this.lblTotalPrice.AutoSize = true;
+            this.lblTotalPrice.Font = new System.Drawing.Font("Segoe UI Light", 13F);
+            this.lblTotalPrice.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(188)))), ((int)(((byte)(156)))));
+            this.lblTotalPrice.Location = new System.Drawing.Point(7, 36);
+            this.lblTotalPrice.Name = "lblTotalPrice";
+            this.lblTotalPrice.Size = new System.Drawing.Size(43, 25);
+            this.lblTotalPrice.TabIndex = 38;
+            this.lblTotalPrice.Text = "0.00";
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(43)))), ((int)(((byte)(61)))));
+            this.panel1.Controls.Add(this.panel2);
+            this.panel1.Controls.Add(this.lblVAT);
+            this.panel1.Controls.Add(this.lblDiscount);
+            this.panel1.Controls.Add(this.lblSubTotal);
+            this.panel1.Controls.Add(this.label5);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Location = new System.Drawing.Point(0, 623);
+            this.panel1.Margin = new System.Windows.Forms.Padding(0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(267, 119);
+            this.panel1.TabIndex = 34;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.label13.ForeColor = System.Drawing.Color.Gainsboro;
+            this.label13.Location = new System.Drawing.Point(9, 16);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(40, 13);
+            this.label13.TabIndex = 37;
+            this.label13.Text = "TOTAL";
             // 
             // lblTotalPrice2
             // 
@@ -417,16 +389,61 @@
             this.lblTotalPrice2.TabIndex = 38;
             this.lblTotalPrice2.Text = "0.00";
             // 
-            // label13
+            // panel3
             // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.label13.ForeColor = System.Drawing.Color.Gainsboro;
-            this.label13.Location = new System.Drawing.Point(9, 16);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(40, 13);
-            this.label13.TabIndex = 37;
-            this.label13.Text = "TOTAL";
+            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(38)))), ((int)(((byte)(56)))));
+            this.panel3.Controls.Add(this.lblTotalPrice2);
+            this.panel3.Controls.Add(this.label13);
+            this.panel3.Location = new System.Drawing.Point(138, 548);
+            this.panel3.Margin = new System.Windows.Forms.Padding(0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(129, 76);
+            this.panel3.TabIndex = 73;
+            this.panel3.Visible = false;
+            // 
+            // su
+            // 
+            this.su.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.su.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(38)))), ((int)(((byte)(56)))));
+            this.su.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F);
+            this.su.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(48)))), ((int)(((byte)(66)))));
+            this.su.Location = new System.Drawing.Point(267, 397);
+            this.su.Margin = new System.Windows.Forms.Padding(0);
+            this.su.Name = "su";
+            this.su.Size = new System.Drawing.Size(35, 345);
+            this.su.TabIndex = 39;
+            this.su.Text = "▼";
+            this.su.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.su.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnScroll_MouseDown);
+            this.su.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnScroll_MouseUp);
+            // 
+            // sd
+            // 
+            this.sd.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.sd.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(38)))), ((int)(((byte)(56)))));
+            this.sd.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F);
+            this.sd.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(48)))), ((int)(((byte)(66)))));
+            this.sd.Location = new System.Drawing.Point(267, 0);
+            this.sd.Margin = new System.Windows.Forms.Padding(0);
+            this.sd.Name = "sd";
+            this.sd.Size = new System.Drawing.Size(35, 397);
+            this.sd.TabIndex = 40;
+            this.sd.Text = "▲";
+            this.sd.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.sd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnScroll_MouseDown);
+            this.sd.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnScroll_MouseUp);
+            // 
+            // panel4
+            // 
+            this.panel4.AutoSize = true;
+            this.panel4.Location = new System.Drawing.Point(3, 3);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(0, 0);
+            this.panel4.TabIndex = 0;
             // 
             // CartSystem
             // 
@@ -446,11 +463,13 @@
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "CartSystem";
             this.Size = new System.Drawing.Size(302, 742);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.flp_cart.ResumeLayout(false);
+            this.flp_cart.PerformLayout();
+            this.pnlOptions.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            this.pnlOptions.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.ResumeLayout(false);
@@ -462,15 +481,6 @@
         private System.Windows.Forms.FlowLayoutPanel flp_cart;
         private System.Windows.Forms.Timer tmrScroll;
         private System.Windows.Forms.Timer tmrCool;
-        private System.Windows.Forms.Label su;
-        private System.Windows.Forms.Label sd;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label lblSubTotal;
-        private System.Windows.Forms.Label lblDiscount;
-        private System.Windows.Forms.Label lblVAT;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel pnlOptions;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnEdit;
@@ -484,11 +494,21 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Button btnModifier;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lblSubTotal;
+        private System.Windows.Forms.Label lblDiscount;
+        private System.Windows.Forms.Label lblVAT;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label lblTotalPrice;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Label lblTotalPrice2;
+        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label lblTotalPrice2;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Label su;
+        private System.Windows.Forms.Label sd;
     }
 }

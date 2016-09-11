@@ -280,7 +280,7 @@ namespace POS.Classes
                         oI.Qty = Convert.ToInt16(dr["qty"]);
                         oI.Description = dr["description"].ToString();
                         oI.ItemPrice = Convert.ToDecimal(dr["price"]);
-                        oI.SubItems = Functions.ToList(dr["sub_items"].ToString());
+                        oI.SubItems = Functions.SubItemsToList(dr["sub_items"].ToString());
                         Collections.OrderItems.Add(oI);
                     }
                 }
@@ -304,6 +304,11 @@ namespace POS.Classes
                             var data = dr[i];
                             if (data != DBNull.Value)
                             {
+                                if(prop.PropertyType == typeof(Dictionary<string,string>))
+                                {
+                                    data = Functions.StringToDict(data.ToString());
+                                }
+
                                 prop.SetValue(x, Convert.ChangeType(data, prop.PropertyType));
                             }
                             i++;
@@ -510,34 +515,25 @@ namespace POS.Classes
                 #endregion
 
                 #region Inserting the Cart
-
-                foreach (OrderItem oI in c.Items.ToList())
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO carts(order_id,qty,description,price,sub_items) VALUES(@order_id,@qty,@description,@price,@sub_items) SELECT SCOPE_IDENTITY()", cnx))
-                    {
-                        cmd.Parameters.Add(new SqlParameter("order_id", o.ID));
-                        cmd.Parameters.Add(new SqlParameter("qty", oI.Qty));
-                        cmd.Parameters.Add(new SqlParameter("description", oI.Description));
-                        cmd.Parameters.Add(new SqlParameter("price", Functions.Monify(oI.ItemPrice.ToString())));
-
-                        string str = "";
-                        foreach (SubItem sI in oI.SubItems)
+                if (c != null)
+                {
+                    foreach (OrderItem oI in c.Items.ToList())
+                        using (SqlCommand cmd = new SqlCommand("INSERT INTO carts(order_id,qty,description,price,sub_items) VALUES(@order_id,@qty,@description,@price,@sub_items) SELECT SCOPE_IDENTITY()", cnx))
                         {
-                            //mod@Modifier1@1.99^mod@Modifier2@2.99^mod@Modifier3@3.99^dis@Some Discount@1.
-                            if (sI.DiscountOrModifier)
-                                str += "dis@";
-                            else str += "mod@";
-                            str += sI.Description + "@";
-                            str += sI.Price;
+                            cmd.Parameters.Add(new SqlParameter("order_id", o.ID));
+                            cmd.Parameters.Add(new SqlParameter("qty", oI.Qty));
+                            cmd.Parameters.Add(new SqlParameter("description", oI.Description));
+                            cmd.Parameters.Add(new SqlParameter("price", Functions.Monify(oI.ItemPrice.ToString())));
 
-                            if (!sI.Equals(oI.SubItems.Last()))
-                                str += "^";
+                            string str = Functions.ListToSubItems(oI.SubItems);
+                            
+                            cmd.Parameters.Add(new SqlParameter("sub_items", str));
+                            oI.ID = (int)(decimal)cmd.ExecuteScalar();
+                            c.OrderID = o.ID;
+                            Collections.Carts.Add(c);
                         }
-                        cmd.Parameters.Add(new SqlParameter("sub_items", str));
-                        oI.ID = (int)(decimal)cmd.ExecuteScalar();
-                        c.OrderID = o.ID;
-                        Collections.Carts.Add(c);
-                    }
-
+                }
+                else { System.Windows.Forms.MessageBox.Show("No cart saved");}
 
                 #endregion
 
@@ -721,7 +717,7 @@ namespace POS.Classes
                 cnx.Open();
 
                 #region Updating the Order
-                using (SqlCommand cmd = new SqlCommand("UPDATE orders SET customer_id=@customer_id, order_type=@order_type, number_of_guests=@number_of_guests, order_date=@order_date, order_status=@order_status, employee_id=@employee_id, table_id=@table_id, total_price=@total_price, total_paid=@total_paid, notes=@notes, discounts=@discounts WHERE id=" + o.ID, cnx))
+                using (SqlCommand cmd = new SqlCommand("UPDATE orders SET customer_id=@customer_id, order_type=@order_type, number_of_guests=@number_of_guests, order_date=@order_date, order_status=@order_status, employee_id=@employee_id, table_id=@table_id, total_price=@total_price, total_paid=@total_paid, payments=@payments, notes=@notes, discounts=@discounts WHERE id=" + o.ID, cnx))
                 {
                     cmd.Parameters.Add(new SqlParameter("customer_id", o.CustomerID));
                     cmd.Parameters.Add(new SqlParameter("order_type", o.OrderType));
@@ -732,6 +728,7 @@ namespace POS.Classes
                     cmd.Parameters.Add(new SqlParameter("table_id", o.TableID));
                     cmd.Parameters.Add(new SqlParameter("total_price", Functions.Monify(o.TotalPrice.ToString())));
                     cmd.Parameters.Add(new SqlParameter("total_paid", Functions.Monify(o.TotalPaid.ToString())));
+                    cmd.Parameters.Add(new SqlParameter("payments", Functions.DictToString(o.PaymentMethods))); //this doesn't exist in create cus there's nothing to log at that point, no payments
                     cmd.Parameters.Add(new SqlParameter("notes", o.Notes));
 
                     if (o.Discounts != null)
@@ -754,12 +751,11 @@ namespace POS.Classes
                     else
                         query = "UPDATE carts SET qty=@qty,description=@description,price=@price,sub_items=@sub_items WHERE id=" + oI.ID + " AND order_id=" + o.ID;
 
-
+  
                     using (SqlCommand cmd = new SqlCommand(query, cnx))
                     {
-                        if (oI.ID == 0)
-                            cmd.Parameters.Add(new SqlParameter("order_id", o.ID));
 
+                        cmd.Parameters.Add(new SqlParameter("order_id", o.ID));
                         cmd.Parameters.Add(new SqlParameter("qty", oI.Qty));
                         cmd.Parameters.Add(new SqlParameter("description", oI.Description));
                         cmd.Parameters.Add(new SqlParameter("price", Functions.Monify(oI.ItemPrice.ToString())));

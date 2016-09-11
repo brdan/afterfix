@@ -19,8 +19,9 @@ namespace POS
         }
 
         // GLOBAL VARIABLES
-        Order thisOrder;
         int itemViewMode = 0; //0 - Rectangles, 1 - List, 2 - Information Boxes
+        Order thisOrder;
+
 
 
         // Public Functions
@@ -89,7 +90,11 @@ namespace POS
             if (panel32.Controls.Find("customer_container", true) != null)
                 panel32.Controls.Remove(panel32.Controls["customer_container"]);
 
+            // officially assign this customer to the order
             thisOrder.CustomerID = ID;
+
+            // paint the customer card on the screen
+            #region Customer Card
             Customer c = Collections.Customers.First(cust => cust.ID == ID);
             Panel pnl_customer = new Panel();
             pnl_customer.Size = new Size(185, 194);
@@ -97,7 +102,7 @@ namespace POS
             pnl_customer.Margin = new Padding(0, 0, 3, 3);
             pnl_customer.AccessibleName = c.ID.ToString();
             pnl_customer.Location = new Point(400, 20);
-            pnl_customer.Name = "customer_container";
+            pnl_customer.Name = "customer_container"; // so we can target by name when "Remove Customer" is clicked
             pnl_customer.BringToFront();
 
             PictureBox pbx = new PictureBox();
@@ -143,9 +148,13 @@ namespace POS
             lblPhone.TextAlign = ContentAlignment.MiddleCenter;
             pnl_customer.Controls.Add(lblPhone);
 
-            label47.Hide();
-            button132.Show();
+            label47.Hide(); // hide the "-No Customer-" label as there is now a customer 
+            button132.Show();  // show the "Remove Customer "button
             panel32.Controls.Add(pnl_customer);
+            #endregion
+
+            saveOrder();
+            MsgGlobal.Tell("Saved.", 'O', 80);
         }
 
 
@@ -1055,6 +1064,51 @@ namespace POS
             }
 
         }
+        void saveOrder()
+        {
+            Cart c = thisOrder.getCart();
+            c.Items = CartSystem.GetCart().Items;
+
+            Label[] labels = {
+                cash,
+                debit,
+                credit,
+                voucher,
+                account,
+                other
+            };
+            thisOrder.PaymentMethods.Clear();
+
+            foreach (Label l in labels)
+                if (l.Text != "0.00") //otherwise, why log it?
+                    thisOrder.PaymentMethods.Add(l.Name.ToUpper(), l.Text.Substring(1));
+
+            SQL.SaveOrder(thisOrder);
+        }
+        void addAmount()
+        {   
+            panel23.Controls.Find(label37.Text.ToLower(), false).First().Text = Settings.Setting["currency"] + Functions.Monify((Convert.ToDecimal(txtAmount.Text) + Convert.ToDecimal(panel23.Controls.Find(label37.Text.ToLower(), false).First().Text.Substring(1))).ToString());
+            lblPaid.Text = Settings.Setting["currency"] + Functions.Monify(totalPaid().ToString());
+            lblToPay.Text = (Convert.ToDecimal(lblTotal.Text.Substring(1)) - totalPaid()) > 0 ? Settings.Setting["currency"] + Functions.Monify((Convert.ToDecimal(lblTotal.Text.Substring(1)) - totalPaid()).ToString()) : Settings.Setting["currency"] + "0.00";
+            lblChangeValue.Text = (Convert.ToDecimal(lblPaid.Text.Substring(1)) - (Convert.ToDecimal(lblTotal.Text.Substring(1)))) < 0 ? Settings.Setting["currency"] + "0.00" : Settings.Setting["currency"] + Functions.Monify((Convert.ToDecimal(lblPaid.Text.Substring(1)) - (Convert.ToDecimal(lblTotal.Text.Substring(1)))).ToString());
+
+            txtAmount.Text = "0.00";
+
+            saveOrder();
+
+            if (lblToPay.Text.Substring(1) == "0.00")
+                btnSummary.Show();
+            else btnSummary.Hide();
+        }
+        decimal totalPaid()
+        {
+            return (Convert.ToDecimal(cash.Text.Substring(1)) +
+                Convert.ToDecimal(credit.Text.Substring(1)) +
+                Convert.ToDecimal(debit.Text.Substring(1)) +
+                Convert.ToDecimal(account.Text.Substring(1)) +
+                Convert.ToDecimal(voucher.Text.Substring(1)) +
+                Convert.ToDecimal(other.Text.Substring(1)));
+        }
         
         // Event handlers
         void btnFirstPageItems_Click(object sender, EventArgs e)
@@ -1126,7 +1180,7 @@ namespace POS
         }
         void button8_Click(object sender, EventArgs e)
         {
-            CartSystem.AddSubItem(false, "Extra Chilli", "00.20");
+            CartSystem.AddSubItem(false, "Extra Chilli", "0.20");
         }
         void button9_Click(object sender, EventArgs e)
         {
@@ -1266,27 +1320,15 @@ namespace POS
 
             if (thisOrder.ID == 0)
             {
+                //check if there are no items 
+
                 CartSystem.IdentifyItems(SQL.CreateOrder(thisOrder, CartSystem.GetCart()).getCart().Items);
-
-
                 btnSaveQuit.Text = "SAVE ORDER";
             }
             else
             {
-                MessageBox.Show("savin.");
-                Cart c = thisOrder.getCart();
-                c.Items = CartSystem.GetCart().Items;
-
-                SQL.SaveOrder(thisOrder);
-
-                MessageBox.Show("You've now saved the order with a total of " + CartSystem.GetCart().Items.Count + " items, though the saved cart for this order has only " + thisOrder.getCart().Items.Count + " ... is that correct or not?");
+                saveOrder();
             }
-            
-            // Create the order skeleton (I call it this because it only contains minimal information right now)
-
-
-
-
 
             // Just make a huge window that says "Exit to Menu" and "Continue Order"
             if (MessageBox.Show("This order has been saved. Would you like to continue?", "Continue?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -1318,36 +1360,109 @@ namespace POS
 
             button132.Hide();
             label47.Show();
+
+            saveOrder();
         }
         private void btnProceedToPayment_Click(object sender, EventArgs e)
         {
             bool valid = true;
-
             // Just validation in case the user forgot to put in a customer :3 (not on purpose)
             if (thisOrder.CustomerID == 0)
             {
                 if (MessageBox.Show("This order has no customer, are you sure you wish to continue?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                     valid = false;
-            }
 
-            if (valid)
-            {
-                // customer approved (either empty or a customer)
-                Tab.SelectTab("Payment");
-                lblTitle.Text = "Back to Customer";
-                lblTitle.AccessibleName = "3";
+                if (lblToPay.Text.Substring(1) == "0.00")
+                    btnSummary.Show();
+                else
+                    button126.Hide();
 
-                // update detai ls
-                label58.Text = Functions.Monify(thisOrder.TotalPaid.ToString());
-                label59.Text = Functions.Monify((thisOrder.TotalPrice - thisOrder.TotalPaid).ToString());
-                label60.Text = Functions.Monify(thisOrder.TotalPrice.ToString());
+                if (valid)
+                {
+                    // customer approved (either empty or a customer)
+                    Tab.SelectTab("Payment");
+                    lblTitle.Text = "Back to Customer";
+                    lblTitle.AccessibleName = "3";
+
+                    // update details
+                    lblPaid.Text = Settings.Setting["currency"] + Functions.Monify(thisOrder.TotalPaid.ToString());
+                    lblTotal.Text = Settings.Setting["currency"] + Functions.Monify(thisOrder.TotalPrice.ToString());
+                    lblToPay.Text = lblTotal.Text;
+
+                    button126.PerformClick();
+
+                    MsgGlobal.Tell("Values are saved automatically here. You can set up payments and simply exit the order.");
+                    MsgGlobal.Tell("You will be able to continue once the total payment is fuily justified.");
+                }
             }
         }
         private void payment_side_btns_Click(object sender, EventArgs e)
         {
-            if(((Button)sender).Text == "EXACT AMOUNT")
-            { }
+            if (((Button)sender).Text == "EXACT AMOUNT")
+                txtAmount.Text = lblToPay.Text.Substring(2);
+            else
+                txtAmount.Text = ((Button)sender).Text;
 
+            addAmount();
+                
+
+        }
+        private void btns_payment_type_Click(object sender, EventArgs e)
+        {
+            label37.Text = ((Button)sender).Text;
+
+            button126.BackColor = Color.FromArgb(24, 42, 60);
+            button127.BackColor = Color.FromArgb(24, 42, 60);
+            button128.BackColor = Color.FromArgb(24, 42, 60);
+            button129.BackColor = Color.FromArgb(24, 42, 60);
+            button130.BackColor = Color.FromArgb(24, 42, 60);
+            button131.BackColor = Color.FromArgb(24, 42, 60);
+
+            ((Button)sender).BackColor = Color.FromArgb(4, 22, 40);
+
+        }
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            foreach (Control lbl in panel23.Controls)
+                if (lbl is Label && !lbl.Name.Contains("lbl"))
+                    lbl.Text = Settings.Setting["currency"] + "0.00";
+
+            lblPaid.Text = Settings.Setting["currency"] + "0.00";
+            lblTotal.Text = Settings.Setting["currency"] + Functions.Monify(thisOrder.TotalPrice.ToString());
+            lblToPay.Text = lblTotal.Text;
+            lblChangeValue.Text = lblPaid.Text;
+        }
+        private void btn_keypad_add_Click(object sender, EventArgs e)
+        {
+            addAmount();
+        }
+
+        private void btn_keypad_clear_Click(object sender, EventArgs e)
+        {
+            txtAmount.Text = "0.00";
+        }
+
+        private void btns_keypad_numbers_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                decimal num = 0;
+                if (txtAmount.Text.Length > 0)
+                {
+                    num = Convert.ToDecimal(txtAmount.Text) / (decimal)0.01;
+                }
+                int num3 = (int)num;
+                txtAmount.Text = (Convert.ToDecimal(num3.ToString() + ((Button)sender).Text) * (decimal)0.01).ToString();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            if (!txtAmount.Text.Contains("."))
+            {
+                txtAmount.AppendText(".00");
+            }
+         
         }
     }
 }
