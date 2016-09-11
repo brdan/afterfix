@@ -154,11 +154,100 @@ namespace POS.Controls
                 selectedItem.Controls[2].Text = Settings.Setting["currency"] + Functions.Monify(price);
             }
         }
-        public void AddSubItem(bool DiscountOrModifier, string textString, string priceString, bool isPercent = false)
+        public void AddSubItem(bool DiscountOrModifier, string textString, string priceString, Order o, bool isPercent = false)
         {
             if (selectedItemIndex == -1)
             {
-                MessageBox.Show("You must select an item to add this to...", "No item selected");
+                //This means it's an order discount
+                if (DiscountOrModifier)
+                {
+                    #region Price Calculations
+                    // The above code checks if the selected item has a "sub-item's box" - if it does, it adds the sub-item accordingly; if not, it creates it, then adds the item.
+                    decimal newPrice = 0.00M;
+                    //Updating prices according to the added/deducted price on the item, also will need to update the item's `Price` field accordingly
+
+                    //deduct
+                    decimal originalPrice = totalPrice;
+
+                    //is price fixed or percentage? 
+                    decimal priceToDeduct = isPercent ? (Convert.ToDecimal(priceString) * originalPrice) / 100 : Convert.ToDecimal(priceString);
+
+                    newPrice = originalPrice - priceToDeduct;
+                    if (newPrice < 0.00M)
+                        newPrice = 0.00M;
+
+                    totalPrice -= (originalPrice - newPrice); //this way no negative value issues
+
+                    //now need to draw the discount
+                    //Item Container
+                    FlowLayoutPanel flp = new FlowLayoutPanel();
+                    flp.Size = new Size(268, 60);
+                    flp.AutoSize = true;
+                    flp.Tag = Color.FromArgb(64, 64, 0).ToArgb().ToString();
+                    flp.Margin = new Padding(0, 0, 0, 0);
+                    flp.AccessibleDescription = "discount";
+                    flp.TabIndex = 0;
+
+                    //Item Qty Label
+                    Label lblQty = new Label();
+                    lblQty.Font = new Font("Heydings Icons", 13.00f);
+                    lblQty.Text = "t";
+                    lblQty.ForeColor = Color.Gainsboro;
+                    lblQty.BackColor = Color.FromArgb(64, 64, 0);
+                    lblQty.Margin = new Padding(0, 0, 0, 0);
+                    lblQty.Padding = new Padding(5, 5, 5, 5);
+                    lblQty.AutoSize = true;
+                    lblQty.TextAlign = ContentAlignment.MiddleCenter;
+                    lblQty.MinimumSize = new Size(35, 60);
+                    lblQty.MaximumSize = new Size(35, 0);
+                    lblQty.Dock = DockStyle.Left;
+                    lblQty.Click += item_Click;
+
+                    //Item Name Label
+                    Label lblName = new Label();
+                    lblName.Font = new Font("Segoe UI", 8.00f, FontStyle.Bold);
+                    lblName.Text = textString;
+                    lblName.ForeColor = Color.Gainsboro;
+                    lblName.BackColor = Color.FromArgb(64, 64, 0);
+                    lblName.Margin = new Padding(0, 0, 0, 0);
+                    lblName.Padding = new Padding(5, 5, 5, 5);
+                    lblName.AutoSize = true;
+                    lblName.TextAlign = ContentAlignment.MiddleLeft;
+                    lblName.MinimumSize = new Size(169, 60);
+                    lblName.MaximumSize = new Size(169, 0);
+                    lblName.UseMnemonic = false;
+                    lblName.Click += item_Click;
+
+                    //Item Price Label
+                    Label lblPrice = new Label();
+                    lblPrice.Font = new Font("Segoe UI", 10.00f, FontStyle.Bold);
+                    lblPrice.Text = Settings.Setting["currency"] + Functions.Monify(priceToDeduct.ToString());
+                    lblPrice.TextAlign = ContentAlignment.MiddleCenter;
+                    lblPrice.ForeColor = Color.Gainsboro;
+                    lblPrice.BackColor = Color.FromArgb(64, 64, 0);
+                    lblPrice.Margin = new Padding(0, 0, 0, 0);
+                    lblPrice.Padding = new Padding(5, 5, 5, 5);
+                    lblPrice.AutoSize = true;
+                    lblPrice.MinimumSize = new Size(64, 60);
+                    lblPrice.MaximumSize = new Size(64, 0);
+                    lblPrice.Dock = DockStyle.Right;
+                    lblPrice.Click += item_Click;
+
+                    flp.Controls.Add(lblQty);
+                    flp.Controls.Add(lblName);
+                    flp.Controls.Add(lblPrice);
+                    flp_cart.Controls.Add(flp);
+
+                    try
+                    {
+                        o.Discounts.Add(textString, Functions.Monify(priceToDeduct.ToString()));
+                    }catch(Exception)
+                    {
+                        MessageBox.Show("The discount already exists, change name", "Already exists", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    #endregion
+                }
             }
             else
             {
@@ -381,6 +470,7 @@ namespace POS.Controls
                 {
                     //flp_cart.Controls[flp_cart.Controls.IndexOf(lbl.Parent)].Controls.OfType<Control>().ToList().ForEach(c => c.BackColor = Color.FromArgb(41, 128, 185));
                     selectedItemIndex = flp_cart.Controls.IndexOf(lbl.Parent);
+                    selectedItem = flp_cart.Controls[selectedItemIndex];
                     lbl.Parent.Controls.OfType<Control>().ToList().ForEach(c => c.BackColor = Color.FromArgb(41, 128, 185));
                     pnlOptionsVisible = false;
                     tmrOptions.Start();
@@ -534,7 +624,10 @@ namespace POS.Controls
 
                 //Deduct price
                 decimal price = Convert.ToDecimal(selectedItem.Controls[2].Text.Substring(1));
-                totalPrice -= price;
+                if (selectedItem.AccessibleDescription == "discount")
+                    totalPrice += price;
+                else
+                    totalPrice -= price;
 
                 //Deselect
                 Deselect(selectedItem);
@@ -574,7 +667,7 @@ namespace POS.Controls
         }
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            if (selectedItemIndex != -1)
+            if (selectedItemIndex != -1 && selectedItem.AccessibleDescription != "discount")
             {
                 selectedItem = flp_cart.Controls[selectedItemIndex];
 
@@ -584,7 +677,7 @@ namespace POS.Controls
         }
         private void btnDiscount_Click(object sender, EventArgs e)
         {
-            if (selectedItemIndex != -1)
+            if (selectedItemIndex != -1 && selectedItem.AccessibleDescription != "discount")
             {
                 selectedItem = flp_cart.Controls[selectedItemIndex];
 
@@ -594,7 +687,7 @@ namespace POS.Controls
         }
         private void btnModifier_Click(object sender, EventArgs e)
         {
-            if (selectedItemIndex != -1)
+            if (selectedItemIndex != -1 && selectedItem.AccessibleDescription != "discount")
             {
                 selectedItem = flp_cart.Controls[selectedItemIndex];
 

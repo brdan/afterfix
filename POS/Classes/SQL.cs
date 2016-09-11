@@ -504,7 +504,7 @@ namespace POS.Classes
                     cmd.Parameters.Add(new SqlParameter("notes", o.Notes));
 
                     if (o.Discounts.Count > 0)
-                        cmd.Parameters.Add(new SqlParameter("discounts", o.Discounts));
+                        cmd.Parameters.Add(new SqlParameter("discounts", Functions.DictToString(o.Discounts)));
                     else
                         cmd.Parameters.Add(new SqlParameter("discounts", DBNull.Value));
 
@@ -732,7 +732,7 @@ namespace POS.Classes
                     cmd.Parameters.Add(new SqlParameter("notes", o.Notes));
 
                     if (o.Discounts.Count > 0)
-                        cmd.Parameters.Add(new SqlParameter("discounts", o.Discounts));
+                        cmd.Parameters.Add(new SqlParameter("discounts", Functions.DictToString(o.Discounts)));
                     else
                         cmd.Parameters.Add(new SqlParameter("discounts", DBNull.Value));
 

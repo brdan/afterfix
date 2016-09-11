@@ -37,6 +37,7 @@ namespace POS
         public void loadCart(Order o)
         {
             Tab.SelectTab("Cart");
+            MsgGlobal.Tell("There's no back button here. If you want to return, save the order, or void it.");
 
             if (o.ID == 0)
                 btnSaveQuit.Text = "CREATE AND SAVE";
@@ -152,6 +153,7 @@ namespace POS
             #endregion
 
             saveOrder();
+            MsgGlobal.Tell("Saved.", 'O', 80);
         }
 
 
@@ -1082,7 +1084,6 @@ namespace POS
                     thisOrder.PaymentMethods.Add(l.Name.ToUpper(), l.Text.Substring(1));
 
             SQL.SaveOrder(thisOrder);
-            MsgGlobal.Tell("Save Complete");
         }
         void addAmount()
         {   
@@ -1180,11 +1181,11 @@ namespace POS
         }
         void button8_Click(object sender, EventArgs e)
         {
-            CartSystem.AddSubItem(false, "Extra Chilli", "0.20");
+            CartSystem.AddSubItem(false, "Extra Chilli", "0.20", thisOrder);
         }
         void button9_Click(object sender, EventArgs e)
         {
-            CartSystem.AddSubItem(true, "Student Discount", "1.00");
+            CartSystem.AddSubItem(true, "Student Discount", "1.00", thisOrder);
         }
 
         // Even hanlders: Cart Options
@@ -1255,7 +1256,7 @@ namespace POS
             {
                 bool isPercent = lblDiscountIsPercent.Text.Contains("%") ? true : false;
 
-                CartSystem.AddSubItem(true, name, price.ToString(), isPercent);
+                CartSystem.AddSubItem(true, name, price.ToString(), thisOrder, isPercent);
             }
         }
         void btnModifierApply_Click(object sender, EventArgs e)
@@ -1271,7 +1272,7 @@ namespace POS
             {
                 bool isPercent = lblModifierIsPercent.Text.Contains("%") ? true : false;
 
-                CartSystem.AddSubItem(false, name, price.ToString(), isPercent);
+                CartSystem.AddSubItem(false, name, price.ToString(), thisOrder, isPercent);
             }
         }
         void btnBack_Click(object sender, EventArgs e)
@@ -1386,22 +1387,20 @@ namespace POS
 
             if (valid)
             {
+                // Udate details
+            if(!btnSummary.Visible)
+                lblPaid.Text = Settings.Setting["currency"] + Functions.Monify(thisOrder.TotalPaid.ToString());
+                lblTotal.Text = Settings.Setting["currency"] + Functions.Monify(thisOrder.TotalPrice.ToString());
+                lblToPay.Text = lblTotal.Text;
+
                 button126.PerformClick();
-                
-                
+
+                MsgGlobal.Tell("You will be able to continue once the total payment is fuily justified.");
 
                 // customer approved (either empty or a customer)
                 Tab.SelectTab("Payment");
                 lblTitle.Text = "Back to Customer";
                 lblTitle.AccessibleName = "3";
-
-                // Udate details
-                if (!btnSummary.Visible)
-                {
-                    lblPaid.Text = Settings.Setting["currency"] + Functions.Monify(thisOrder.TotalPaid.ToString());
-                    lblTotal.Text = Settings.Setting["currency"] + Functions.Monify(thisOrder.TotalPrice.ToString());
-                    lblToPay.Text = lblTotal.Text;
-                }
             }
 
 

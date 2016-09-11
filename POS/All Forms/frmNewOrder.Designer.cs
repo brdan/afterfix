@@ -658,9 +658,9 @@
             this.btnMenu.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMenu.Font = new System.Drawing.Font("Heydings Icons", 15.75F);
             this.btnMenu.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(14)))), ((int)(((byte)(32)))), ((int)(((byte)(50)))));
-            this.btnMenu.Location = new System.Drawing.Point(932, 4);
+            this.btnMenu.Location = new System.Drawing.Point(895, 4);
             this.btnMenu.Name = "btnMenu";
-            this.btnMenu.Size = new System.Drawing.Size(75, 40);
+            this.btnMenu.Size = new System.Drawing.Size(88, 40);
             this.btnMenu.TabIndex = 64;
             this.btnMenu.Text = "H";
             this.btnMenu.UseVisualStyleBackColor = false;

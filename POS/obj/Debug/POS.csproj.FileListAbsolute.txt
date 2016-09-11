@@ -49,3 +49,4 @@ C:\Users\mohamed\Desktop\POS\POS\obj\Debug\POS.Controls.MsgGlobal.resources
 C:\Users\mohamed\Desktop\POS\POS\obj\Debug\POS.frmNewOrder.resources
 C:\Users\mohamed\Desktop\POS\POS\obj\Debug\POS.Properties.Resources.resources
 C:\Users\mohamed\Desktop\POS\POS\obj\Debug\POS.csproj.GenerateResource.Cache
+C:\Users\mohamed\Desktop\POS\POS\obj\Debug\POS.csprojResolveAssemblyReference.cache
