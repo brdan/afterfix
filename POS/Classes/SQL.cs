@@ -503,7 +503,7 @@ namespace POS.Classes
                     cmd.Parameters.Add(new SqlParameter("total_paid", Functions.Monify(o.TotalPaid.ToString())));
                     cmd.Parameters.Add(new SqlParameter("notes", o.Notes));
 
-                    if (o.Discounts != null)
+                    if (o.Discounts.Count > 0)
                         cmd.Parameters.Add(new SqlParameter("discounts", o.Discounts));
                     else
                         cmd.Parameters.Add(new SqlParameter("discounts", DBNull.Value));
@@ -731,7 +731,7 @@ namespace POS.Classes
                     cmd.Parameters.Add(new SqlParameter("payments", Functions.DictToString(o.PaymentMethods))); //this doesn't exist in create cus there's nothing to log at that point, no payments
                     cmd.Parameters.Add(new SqlParameter("notes", o.Notes));
 
-                    if (o.Discounts != null)
+                    if (o.Discounts.Count > 0)
                         cmd.Parameters.Add(new SqlParameter("discounts", o.Discounts));
                     else
                         cmd.Parameters.Add(new SqlParameter("discounts", DBNull.Value));
@@ -743,7 +743,7 @@ namespace POS.Classes
 
                 #region Updating the Cart
                 string query = null;
-                foreach (OrderItem oI in o.getCart().Items.ToList())
+                foreach (OrderItem oI in o.MatchCart().Items.ToList())
                 {
                     
                     if (oI.ID == 0)

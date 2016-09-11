@@ -152,6 +152,60 @@ namespace POS.Classes
 
             return Math.Round(p, 2).ToString("0.00");
         }
+        public static Customer GetUnknown()
+        {
+            Customer x = new Customer();
+            x.ID = 0;
+            x.FirstName = "Unknown Customer";
+            x.LastName = "";
+            x.DateofBirth = DateTime.Today;
+            x.Avatar = Properties.Resources.unknown;
+            x.Email = "unknown@customer.com";
+            x.Telephone = "(+00) 000 00 0000";
+            x.Mobile= "(+00) 000 00 0000";
+            x.Address1 = "No Address";
+            x.Address2 = "No Address";
+            x.Address3 = "No Address";
+            x.City = "Not Applicable";
+            x.Postcode = "ABC 123";
+            x.State = "Not Applicable";
+            x.Country = "Not Applicable";
+            x.Notes = "";
+
+            return x;
+        }
+        public static string IntToStatus(int i)
+        {
+            /* 
+            --- Order Status --- 
+            * 1 - Created but empty
+            * 2 - Pending
+            * 3 - Cancelled
+            * 4 - Completed
+            */
+
+            string str = "";
+            switch (i)
+            {
+                case 1:
+                    str = "Created";
+                    break;
+                case 2:
+                    str = "Pending";
+                    break;
+                case 3:
+                    str = "Cancelled";
+                    break;
+                case 4:
+                    str = "Completed";
+                    break;
+
+
+                default:
+                    break;
+            }
+            return str;
+        }
 
         //Verifiers 
         public static bool VerifyUserUPass(string Username, string Password)
@@ -264,8 +318,6 @@ namespace POS.Classes
 
             return str;
         }
-
-
         public static string Monify (string money)
         {
             return Convert.ToDecimal(money).ToString("0#.00");

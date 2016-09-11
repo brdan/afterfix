@@ -52,16 +52,14 @@
             this.lblDiscount = new System.Windows.Forms.Label();
             this.lblVAT = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
             this.lblTotalPrice = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label13 = new System.Windows.Forms.Label();
             this.lblTotalPrice2 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.su = new System.Windows.Forms.Label();
             this.sd = new System.Windows.Forms.Label();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.flp_cart.SuspendLayout();
             this.pnlOptions.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -72,7 +70,6 @@
             // 
             this.flp_cart.AutoScroll = true;
             this.flp_cart.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(48)))), ((int)(((byte)(66)))));
-            this.flp_cart.Controls.Add(this.panel4);
             this.flp_cart.Location = new System.Drawing.Point(0, 34);
             this.flp_cart.Margin = new System.Windows.Forms.Padding(0);
             this.flp_cart.Name = "flp_cart";
@@ -104,7 +101,7 @@
             this.pnlOptions.Location = new System.Drawing.Point(0, 742);
             this.pnlOptions.Name = "pnlOptions";
             this.pnlOptions.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.pnlOptions.Size = new System.Drawing.Size(302, 0);
+            this.pnlOptions.Size = new System.Drawing.Size(306, 0);
             this.pnlOptions.TabIndex = 67;
             // 
             // label11
@@ -329,17 +326,6 @@
             this.panel2.Size = new System.Drawing.Size(129, 119);
             this.panel2.TabIndex = 71;
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.label4.ForeColor = System.Drawing.Color.Gainsboro;
-            this.label4.Location = new System.Drawing.Point(9, 16);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 13);
-            this.label4.TabIndex = 37;
-            this.label4.Text = "TOTAL";
-            // 
             // lblTotalPrice
             // 
             this.lblTotalPrice.AutoSize = true;
@@ -350,6 +336,17 @@
             this.lblTotalPrice.Size = new System.Drawing.Size(43, 25);
             this.lblTotalPrice.TabIndex = 38;
             this.lblTotalPrice.Text = "0.00";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.label4.ForeColor = System.Drawing.Color.Gainsboro;
+            this.label4.Location = new System.Drawing.Point(9, 16);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(40, 13);
+            this.label4.TabIndex = 37;
+            this.label4.Text = "TOTAL";
             // 
             // panel1
             // 
@@ -403,16 +400,13 @@
             // 
             // su
             // 
-            this.su.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.su.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(38)))), ((int)(((byte)(56)))));
             this.su.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F);
             this.su.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(48)))), ((int)(((byte)(66)))));
             this.su.Location = new System.Drawing.Point(267, 397);
             this.su.Margin = new System.Windows.Forms.Padding(0);
             this.su.Name = "su";
-            this.su.Size = new System.Drawing.Size(35, 345);
+            this.su.Size = new System.Drawing.Size(39, 345);
             this.su.TabIndex = 39;
             this.su.Text = "▼";
             this.su.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -421,29 +415,18 @@
             // 
             // sd
             // 
-            this.sd.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.sd.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(38)))), ((int)(((byte)(56)))));
             this.sd.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F);
             this.sd.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(48)))), ((int)(((byte)(66)))));
             this.sd.Location = new System.Drawing.Point(267, 0);
             this.sd.Margin = new System.Windows.Forms.Padding(0);
             this.sd.Name = "sd";
-            this.sd.Size = new System.Drawing.Size(35, 397);
+            this.sd.Size = new System.Drawing.Size(39, 397);
             this.sd.TabIndex = 40;
             this.sd.Text = "▲";
             this.sd.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.sd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnScroll_MouseDown);
             this.sd.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnScroll_MouseUp);
-            // 
-            // panel4
-            // 
-            this.panel4.AutoSize = true;
-            this.panel4.Location = new System.Drawing.Point(3, 3);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(0, 0);
-            this.panel4.TabIndex = 0;
             // 
             // CartSystem
             // 
@@ -462,9 +445,7 @@
             this.Controls.Add(this.flp_cart);
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "CartSystem";
-            this.Size = new System.Drawing.Size(302, 742);
-            this.flp_cart.ResumeLayout(false);
-            this.flp_cart.PerformLayout();
+            this.Size = new System.Drawing.Size(306, 742);
             this.pnlOptions.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
@@ -507,7 +488,6 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label lblTotalPrice2;
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label su;
         private System.Windows.Forms.Label sd;
     }

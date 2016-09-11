@@ -37,7 +37,6 @@ namespace POS
         public void loadCart(Order o)
         {
             Tab.SelectTab("Cart");
-            MsgGlobal.Tell("There's no back button here. If you want to return, save the order, or void it.");
 
             if (o.ID == 0)
                 btnSaveQuit.Text = "CREATE AND SAVE";
@@ -62,7 +61,6 @@ namespace POS
             */
             thisOrder = new Order(btn.AccessibleDescription);
             thisOrder.EmployeeID = Collections.CurrentUser.ID;
-
             int routePath = Convert.ToInt16(btn.AccessibleName);
             switch (routePath)
             {
@@ -154,7 +152,6 @@ namespace POS
             #endregion
 
             saveOrder();
-            MsgGlobal.Tell("Saved.", 'O', 80);
         }
 
 
@@ -1066,9 +1063,10 @@ namespace POS
         }
         void saveOrder()
         {
-            Cart c = thisOrder.getCart();
+            Cart c = thisOrder.MatchCart();
             c.Items = CartSystem.GetCart().Items;
-
+            thisOrder.TotalPaid = totalPaid();
+            thisOrder.OrderStatus = 2;
             Label[] labels = {
                 cash,
                 debit,
@@ -1084,6 +1082,7 @@ namespace POS
                     thisOrder.PaymentMethods.Add(l.Name.ToUpper(), l.Text.Substring(1));
 
             SQL.SaveOrder(thisOrder);
+            MsgGlobal.Tell("Save Complete");
         }
         void addAmount()
         {   
@@ -1098,7 +1097,8 @@ namespace POS
 
             if (lblToPay.Text.Substring(1) == "0.00")
                 btnSummary.Show();
-            else btnSummary.Hide();
+            else
+                btnSummary.Hide();
         }
         decimal totalPaid()
         {
@@ -1307,13 +1307,19 @@ namespace POS
                     lblTitle.AccessibleName = "2";
                     break;
 
+                case 4:
+                    //Back to Payment
+                    Tab.SelectTab("Payment");
+                    lblTitle.Text = "Back to Customer";
+                    lblTitle.AccessibleName = "3";
+                    break;
 
                 default:
                     MessageBox.Show("All I know is ... that this is supposed to go back somewhere :p");
                     break;
             }
         }
-        private void btnSaveQuit_Click(object sender, EventArgs e)
+        void btnSaveQuit_Click(object sender, EventArgs e)
         {
             // Saving the order (remember that the cart and order are stored independently of one another)
             thisOrder.TotalPrice = CartSystem.totalPrice;
@@ -1322,7 +1328,7 @@ namespace POS
             {
                 //check if there are no items 
 
-                CartSystem.IdentifyItems(SQL.CreateOrder(thisOrder, CartSystem.GetCart()).getCart().Items);
+                CartSystem.IdentifyItems(SQL.CreateOrder(thisOrder, CartSystem.GetCart()).MatchCart().Items);
                 btnSaveQuit.Text = "SAVE ORDER";
             }
             else
@@ -1346,13 +1352,13 @@ namespace POS
             }
 
         }
-        private void btnAddCustomer_Click(object sender, EventArgs e)
+        void btnAddCustomer_Click(object sender, EventArgs e)
         {
             Router.frmCustFromOrder = true;
             Router.Customers();
             
         }
-        private void btnRemoveCustomer_Click(object sender, EventArgs e)
+        void btnRemoveCustomer_Click(object sender, EventArgs e)
         {
             //Removing customer
             thisOrder.CustomerID = 0;
@@ -1363,7 +1369,7 @@ namespace POS
 
             saveOrder();
         }
-        private void btnProceedToPayment_Click(object sender, EventArgs e)
+        void btnProceedToPayment_Click(object sender, EventArgs e)
         {
             bool valid = true;
             // Just validation in case the user forgot to put in a customer :3 (not on purpose)
@@ -1376,30 +1382,34 @@ namespace POS
                     btnSummary.Show();
                 else
                     button126.Hide();
+            }
 
-                if (valid)
+            if (valid)
+            {
+                button126.PerformClick();
+                
+                
+
+                // customer approved (either empty or a customer)
+                Tab.SelectTab("Payment");
+                lblTitle.Text = "Back to Customer";
+                lblTitle.AccessibleName = "3";
+
+                // Udate details
+                if (!btnSummary.Visible)
                 {
-                    // customer approved (either empty or a customer)
-                    Tab.SelectTab("Payment");
-                    lblTitle.Text = "Back to Customer";
-                    lblTitle.AccessibleName = "3";
-
-                    // update details
                     lblPaid.Text = Settings.Setting["currency"] + Functions.Monify(thisOrder.TotalPaid.ToString());
                     lblTotal.Text = Settings.Setting["currency"] + Functions.Monify(thisOrder.TotalPrice.ToString());
                     lblToPay.Text = lblTotal.Text;
-
-                    button126.PerformClick();
-
-                    MsgGlobal.Tell("Values are saved automatically here. You can set up payments and simply exit the order.");
-                    MsgGlobal.Tell("You will be able to continue once the total payment is fuily justified.");
                 }
             }
+
+
         }
-        private void payment_side_btns_Click(object sender, EventArgs e)
+        void payment_side_btns_Click(object sender, EventArgs e)
         {
             if (((Button)sender).Text == "EXACT AMOUNT")
-                txtAmount.Text = lblToPay.Text.Substring(2);
+                txtAmount.Text = lblToPay.Text.Substring(1);
             else
                 txtAmount.Text = ((Button)sender).Text;
 
@@ -1407,7 +1417,7 @@ namespace POS
                 
 
         }
-        private void btns_payment_type_Click(object sender, EventArgs e)
+        void btns_payment_type_Click(object sender, EventArgs e)
         {
             label37.Text = ((Button)sender).Text;
 
@@ -1421,8 +1431,10 @@ namespace POS
             ((Button)sender).BackColor = Color.FromArgb(4, 22, 40);
 
         }
-        private void btnReset_Click(object sender, EventArgs e)
+        void btnReset_Click(object sender, EventArgs e)
         {
+            btnSummary.Hide();
+
             foreach (Control lbl in panel23.Controls)
                 if (lbl is Label && !lbl.Name.Contains("lbl"))
                     lbl.Text = Settings.Setting["currency"] + "0.00";
@@ -1432,17 +1444,15 @@ namespace POS
             lblToPay.Text = lblTotal.Text;
             lblChangeValue.Text = lblPaid.Text;
         }
-        private void btn_keypad_add_Click(object sender, EventArgs e)
+        void btn_keypad_add_Click(object sender, EventArgs e)
         {
             addAmount();
         }
-
-        private void btn_keypad_clear_Click(object sender, EventArgs e)
+        void btn_keypad_clear_Click(object sender, EventArgs e)
         {
             txtAmount.Text = "0.00";
         }
-
-        private void btns_keypad_numbers_Click(object sender, EventArgs e)
+        void btns_keypad_numbers_Click(object sender, EventArgs e)
         {
             try
             {
@@ -1463,6 +1473,38 @@ namespace POS
                 txtAmount.AppendText(".00");
             }
          
+        }     
+        void btnSummary_Click(object sender, EventArgs e)
+        {
+            // continue to summary page
+
+            // fill customer info 
+            Customer whichCustomer = thisOrder.CustomerID == 0 ? Functions.GetUnknown() : Collections.Customers.Find(c => c.ID == thisOrder.CustomerID);
+
+            try { pbSC.Image = whichCustomer.Avatar; } catch(Exception) { pbSC.Image = Properties.Resources.unknown;  }
+            lblSCName.Text = whichCustomer.FirstName + "  " + whichCustomer.LastName;
+            lblSCEmail.Text = whichCustomer.Email;
+            lblSCPhone.Text = whichCustomer.Telephone;
+            lblSCMobile.Text = whichCustomer.Mobile;
+            lblSCAddress.Text = whichCustomer.Address1;
+            
+            // fill order info
+            lblSOType.Text = thisOrder.OrderType;
+            lblSOGuests.Text = thisOrder.NumberOfGuests.ToString();
+            lblSODate.Text = thisOrder.OrderDate.ToString();
+            lblSOStatus.Text = Functions.IntToStatus(thisOrder.OrderStatus);
+            lblSOServer.Text = Collections.Users.Find(u => u.ID == thisOrder.EmployeeID).Username;
+            lblSOTable.Text = thisOrder.TableID == 0 ? "No table" : thisOrder.TableID.ToString(); //PTV maybe tables will have names later?
+            lblSOTotal.Text = Settings.Setting["currency"] + Functions.Monify(thisOrder.TotalPrice.ToString());
+            lblSOPaid.Text = Settings.Setting["currency"] + Functions.Monify(thisOrder.TotalPaid.ToString()) + " (Click to see all)";
+            lblSODiscounts.Text = "Items: (" + Functions.Monify(thisOrder.MatchCart().SigmaDiscounts().ToString()) + ") | Order: (" + Functions.Monify(thisOrder.SigmaDiscounts().ToString()) + ")";
+            lblSONotes.Text = thisOrder.Notes;
+
+            // show the tab and fix title and back button
+            Tab.SelectTab("Summary");
+            lblTitle.AccessibleName = "4";
+            lblTitle.Text = "Back to Payment";
+
         }
     }
 }

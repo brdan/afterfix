@@ -38,10 +38,11 @@ namespace POS.Classes
             OrderType = type;
             Notes = "";
             Discounts = null;
-            PaymentMethods = new Dictionary<string, string>();
+            PaymentMethods = new Dictionary<string, string>(); // we need to instantiate them at least, otherwise they dont exist
+            Discounts = new Dictionary<string, string>();      // ""
         }
 
-        public Cart getCart()
+        public Cart MatchCart()
         {
             Cart ca = new Cart();
             try
@@ -56,6 +57,15 @@ namespace POS.Classes
             }
             return ca;
         }
+        public decimal SigmaDiscounts()
+        {
+            decimal order = 0;
+            if (Discounts.Count > 0)
+                foreach (var pair in Discounts.Values)
+                    order += Convert.ToDecimal(pair);
+
+            return order;
+        }
     }
 
     public class OrderItem
@@ -66,12 +76,31 @@ namespace POS.Classes
         public string Description { get; set; }
         public decimal ItemPrice { get; set; }
         public List<SubItem> SubItems = new List<SubItem>();
+        public decimal GetDiscount()
+        {
+            decimal sigma = 0;
+
+            foreach (SubItem sI in SubItems)
+                if (sI.DiscountOrModifier)
+                    sigma += sI.Price;
+
+            return sigma;
+        }
     }
 
     public class Cart
     {
         public int OrderID { get; set; } //this keeps it unique, PK
         public List<OrderItem> Items = new List<OrderItem>();
+        
+        public decimal SigmaDiscounts()
+        {
+            decimal sigma = 0;
+            foreach (OrderItem oI in Items)
+                sigma += oI.GetDiscount();
+
+            return sigma; //returns all item discounts in the cart
+        }
     }
 
     public class SubItem
